@@ -13,10 +13,28 @@ PANTRY_PUBLIC = "https://getpantry.cloud/apiv1/public/4e838a05450f87530fe0450439
 SYMBOLS_PUBLIC = "https://getpantry.cloud/apiv1/public/4a8477043869bbc5a9736316cf3d123f"
 
 
-def get_json(url):
-    req = urllib.request.Request(url, headers=UA)
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return json.loads(r.read().decode("utf-8"))
+def get_json(url, retries=4):
+    import time
+    last = None
+    for i in range(retries):
+        try:
+            req = urllib.request.Request(url, headers=UA)
+            with urllib.request.urlopen(req, timeout=30) as r:
+                return json.loads(r.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            last = e
+            if e.code != 429:
+                raise
+            wait = 5 * (2 ** i)
+            try:
+                ra = e.headers.get("Retry-After")
+                if ra is not None:
+                    wait = max(wait, int(ra) + 1)
+            except Exception:
+                pass
+            print(f"429 제한 → {wait}초 대기 후 재시도 ({i+1}/{retries})")
+            time.sleep(wait)
+    raise last
 
 
 def refresh_rsi():
@@ -83,6 +101,8 @@ def refresh_symbols():
 
 
 if __name__ == "__main__":
-    refresh_rsi()
-    refresh_daily()
-    refresh_symbols()
+    for job in (refresh_rsi, refresh_daily, refresh_symbols):
+        try:
+            job()
+        except Exception as e:
+            print(f"{job.__name__} 실패 (기존 파일 유지): {e}")
