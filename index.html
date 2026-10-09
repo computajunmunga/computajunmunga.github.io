@@ -47,49 +47,64 @@ description: Futures market model statistics. Sample data demo.
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 // 데이터: 시간당 GitHub Actions가 갱신하는 로컬 CSV (방문자는 Pantry를 직접 때리지 않음)
+// 60초마다 자동 새로고침: 캐시버스터로 최신 CSV를 읽고 차트를 다시 그린다.
 const grid = { color: 'rgba(148,163,184,.15)' };
 const tick = { color: '#94a3b8' };
 const leg = { labels: { color: '#e2e8f0' } };
+let chModels = null, chRsi = null;
+const bust = () => '?t=' + Date.now();
 
-fetch('{{ relativebase }}assets/data/model_daily.csv')
-  .then(r => r.text())
-  .then(txt => {
-    const rows = txt.trim().split('\n').slice(1).map(l => {
-      const [day, model, n, acc] = l.split(',');
-      return { day: day.slice(5), model, acc: parseFloat(acc) };
-    });
-    const labels = [...new Set(rows.map(r => r.day))];
-    const mk = (model, label, color) => ({
-      label, data: labels.map(d => { const f = rows.find(r => r.day === d && r.model === model); return f ? f.acc : null; }),
-      borderColor: color, tension: .25, pointRadius: 3 });
-    new Chart(document.getElementById('chModels'), { type: 'line',
-      data: { labels, datasets: [mk('model1', 'Model 1', '#22c55e'), mk('model2', 'Model 2', '#3b82f6')] },
-      options: { plugins: { legend: leg },
-        scales: { x: { grid, ticks: tick }, y: { min: 30, max: 45, grid, ticks: tick } } } });
-  });
+function drawModels() {
+  fetch('{{ relativebase }}assets/data/model_daily.csv' + bust())
+    .then(r => r.text())
+    .then(txt => {
+      const rows = txt.trim().split('\n').slice(1).map(l => {
+        const [day, model, n, acc] = l.split(',');
+        return { day: day.slice(5), model, acc: parseFloat(acc) };
+      });
+      const labels = [...new Set(rows.map(r => r.day))];
+      const mk = (model, label, color) => ({
+        label, data: labels.map(d => { const f = rows.find(r => r.day === d && r.model === model); return f ? f.acc : null; }),
+        borderColor: color, tension: .25, pointRadius: 3 });
+      if (chModels) chModels.destroy();
+      chModels = new Chart(document.getElementById('chModels'), { type: 'line',
+        data: { labels, datasets: [mk('model1', 'Model 1', '#22c55e'), mk('model2', 'Model 2', '#3b82f6')] },
+        options: { plugins: { legend: leg },
+          scales: { x: { grid, ticks: tick }, y: { min: 30, max: 45, grid, ticks: tick } } } });
+    })
+    .catch(() => {});
+}
 
-fetch('{{ relativebase }}assets/data/rsi.csv')
-  .then(r => { if (!r.ok) throw 0; return r.text(); })
-  .then(txt => {
-    const rows = txt.trim().split('\n').slice(1).filter(l => l.trim());
-    if (!rows.length) throw 0;
-    const cols = [[], [], [], []];
-    const labels = [];
-    for (const l of rows) {
-      const [ts, a, b, c, d] = l.split(',');
-      labels.push(ts);
-      cols[0].push(parseFloat(a)); cols[1].push(parseFloat(b));
-      cols[2].push(parseFloat(c)); cols[3].push(parseFloat(d));
-    }
-    const names = ['RSI 15m', 'RSI 1h', 'RSI 4h', 'RSI 1d'];
-    const colors = ['#f472b6', '#38bdf8', '#eab308', '#2dd4bf'];
-    new Chart(document.getElementById('chRsi'), { type: 'line',
-      data: { labels, datasets: cols.map((data, i) => ({
-        label: names[i], data, borderColor: colors[i],
-        tension: .2, pointRadius: 0, borderWidth: 1.5 })) },
-      options: { plugins: { legend: leg }, interaction: { mode: 'index', intersect: false },
-        scales: { x: { grid, ticks: { color: '#94a3b8', maxTicksLimit: 12 } },
-          y: { min: 0, max: 100, grid, ticks: tick } } } });
-  })
-  .catch(() => { document.getElementById('rsiNote').style.display = 'block'; });
+function drawRsi() {
+  fetch('{{ relativebase }}assets/data/rsi.csv' + bust())
+    .then(r => { if (!r.ok) throw 0; return r.text(); })
+    .then(txt => {
+      const rows = txt.trim().split('\n').slice(1).filter(l => l.trim());
+      if (!rows.length) throw 0;
+      const cols = [[], [], [], []];
+      const labels = [];
+      for (const l of rows) {
+        const [ts, a, b, c, d] = l.split(',');
+        labels.push(ts);
+        cols[0].push(parseFloat(a)); cols[1].push(parseFloat(b));
+        cols[2].push(parseFloat(c)); cols[3].push(parseFloat(d));
+      }
+      const names = ['RSI 15m', 'RSI 1h', 'RSI 4h', 'RSI 1d'];
+      const colors = ['#f472b6', '#38bdf8', '#eab308', '#2dd4bf'];
+      document.getElementById('rsiNote').style.display = 'none';
+      if (chRsi) chRsi.destroy();
+      chRsi = new Chart(document.getElementById('chRsi'), { type: 'line',
+        data: { labels, datasets: cols.map((data, i) => ({
+          label: names[i], data, borderColor: colors[i],
+          tension: .2, pointRadius: 0, borderWidth: 1.5 })) },
+        options: { plugins: { legend: leg }, interaction: { mode: 'index', intersect: false },
+          scales: { x: { grid, ticks: { color: '#94a3b8', maxTicksLimit: 12 } },
+            y: { min: 0, max: 100, grid, ticks: tick } } } });
+    })
+    .catch(() => { document.getElementById('rsiNote').style.display = 'block'; });
+}
+
+drawModels();
+drawRsi();
+setInterval(() => { drawModels(); drawRsi(); }, 60000);
 </script>
