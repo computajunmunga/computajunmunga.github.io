@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>손익비와 승률의 수학: 2:1 매매가 수익이 되는 조건 | CoinLens 리서치</title>
+<meta name="description" content="승률 40%에도 2:1 손익비면 왜 수익이 나는지 기대값 공식으로 설명합니다. 수수료를 포함한 실제 분기점 계산 포함.">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f172a;color:#e2e8f0;font-family:'Malgun Gothic','Segoe UI',sans-serif;line-height:1.8}
+.wrap{max-width:760px;margin:0 auto;padding:32px 20px 60px}
+h1{font-size:1.6rem;margin-bottom:6px}
+.meta{color:#94a3b8;font-size:.82rem;margin-bottom:24px}
+h2{font-size:1.2rem;margin:32px 0 12px;color:#7dd3fc}
+p{margin:12px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem}
+th,td{padding:8px 10px;border:1px solid #334155;text-align:center}
+th{background:#1e293b;color:#94a3b8}
+.formula{background:#1e293b;border-left:4px solid #22c55e;padding:12px 16px;margin:16px 0;font-family:monospace}
+.warn{background:#1e293b;border-left:4px solid #eab308;padding:12px 16px;margin:16px 0;font-size:.88rem}
+.author{border-top:1px solid #334155;margin-top:40px;padding-top:16px;color:#94a3b8;font-size:.85rem}
+footer{text-align:center;color:#64748b;font-size:.78rem;padding:24px;border-top:1px solid #1e293b;margin-top:40px}
+a{color:#7dd3fc}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>손익비와 승률의 수학: 2:1 매매가 수익이 되는 조건</h1>
+  <p class="meta">CoinLens 리서치 · 2026-10-09 · 읽는 시간 6분</p>
+
+  <p>“승률 40%인데 수익이 난다고?” 처음 들으면 틀린 말 같습니다.
+  하지만 손익비가 2:1이면 수학적으로 성립합니다. 이 글에서는 기대값 공식으로
+  왜 그런지, 그리고 수수료를 포함하면 분기점이 어디로 움직이는지 계산합니다.</p>
+
+  <h2>1. 기대값 공식 1줄</h2>
+  <p>승률을 p, 익절을 +2R, 손절을 −1R이라 하면 거래당 기대값은:</p>
+  <div class="formula">E = p × (+2R) + (1−p) × (−1R) = (3p − 1)R</div>
+  <p>p = 0.4를 대입하면 E = +0.2R입니다. 10번 중 4번만 맞아도 남습니다.</p>
+
+  <h2>2. 손익분기표</h2>
+  <table>
+    <tr><th>손익비</th><th>분기 승률</th><th>40%일 때 기대값</th></tr>
+    <tr><td>1 : 1</td><td>50.0%</td><td>−0.20R (손실)</td></tr>
+    <tr><td>1.2 : 1</td><td>45.5%</td><td>−0.12R (손실)</td></tr>
+    <tr><td>2 : 1</td><td>33.3%</td><td>+0.20R (수익)</td></tr>
+    <tr><td>3 : 1</td><td>25.0%</td><td>+0.40R (수익)</td></tr>
+  </table>
+  <p>같은 40%라도 손익비에 따라 손실과 수익이 갈립니다.
+  "승률이 낮다 = 진다"는 통념이 틀린 이유입니다.</p>
+
+  <h2>3. 수수료를 넣으면 분기가 올라갑니다</h2>
+  <p>선물 테이커 왕복 0.1%, 명목이 자산의 10%라면 거래당 비용은 약 0.01%입니다.
+  손절폭 1% 기준 R 단위로 환산하면 약 0.1R이 비용으로 나갑니다.
+  분기는 33.3%에서 약 36~37%로 올라갑니다. 그래도 40%는 흑자 구간에 남습니다.</p>
+  <div class="warn">주의: 위 계산은 슬리피지·펀딩비 제외입니다.
+  변동성 폭발 구간에서는 체결가가 밀려 실제 손익비가 깨질 수 있습니다.</div>
+
+  <h2>4. 자주 하는 오해 3개</h2>
+  <p><strong>① "10번 중 4번이면 +200만 확정"</strong> — 아닙니다.
+  평균이 그렇다는 뜻이고, 10거래로 질 확률은 약 38%입니다.
+  수백 거래가 쌓여야 평균에 수렴합니다.</p>
+  <p><strong>② "승률 90% 기법이 최고"</strong> — 손절을 안 하고 버티면
+  승률은 90%도 나옵니다. 한 번 터지면 전재산을 잃는 구조라 기대값은
+  마이너스일 수 있습니다.</p>
+  <p><strong>③ "2:1이면 무조건 번다"</strong> — 33.3%를 넘을 때만 해당합니다.
+  30% 승률에 2:1이면 손실입니다.</p>
+
+  <h2>5. FAQ</h2>
+  <p><strong>Q. 개인도 이 수학으로 벌 수 있나요?</strong><br>
+  A. 수학은 맞지만, 승률 추정이 어렵습니다. 과거 40%가 미래 40%를 보장하지
+  않으므로, 표본이 쌓일수록 신뢰도가 올라가는 구조(월간 재검증)가 필요합니다.</p>
+  <p><strong>Q. 레버리지를 쓰면 달라지나요?</strong><br>
+  A. 기대값(R 단위)은 같습니다. 달라지는 건 변동폭과 청산 위험, 그리고
+  명목 기준 수수료입니다.</p>
+
+  <div class="author">작성: CoinLens Quant Desk · 문의: <a href="./privacy.html">개인정보처리방침</a></div>
+</div>
+<footer>
+  <p>© 2026 CoinLens · Research &amp; education only, not investment advice.</p>
+</footer>
+</body>
+</html>
