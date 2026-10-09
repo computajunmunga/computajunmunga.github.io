@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360">
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <g transform="translate(30,18) scale(0.63)">
+    <circle cx="256" cy="190" r="118" fill="none" stroke="#00F2FE" stroke-width="12" filter="url(#glow)"/>
+    <polyline points="172,244 222,204 252,224 302,152" fill="none" stroke="#7F9CF5"
+              stroke-width="14" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+    <path d="M 290 136 L 320 133 L 317 163 Z" fill="#00F2FE" stroke="#00F2FE"
+          stroke-width="2" stroke-linejoin="round" filter="url(#glow)" />
+  </g>
+
+  <text x="400" y="170"
+        font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="92" font-weight="800" fill="#E2E8F0" letter-spacing="18">COINLENS</text>
+  <text x="404" y="228"
+        font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="30" font-weight="600" fill="#7F9CF5" letter-spacing="12">DATA SCIENCE</text>
+  <text x="404" y="268"
+        font-family="'Noto Sans KR', system-ui, sans-serif"
+        font-size="24" font-weight="400" fill="#94A3B8" letter-spacing="6">코인렌즈 데이터사이언스</text>
+</svg>

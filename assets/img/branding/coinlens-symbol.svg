@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Lens ring -->
+  <circle cx="256" cy="190" r="118" fill="none" stroke="#00F2FE" stroke-width="10" filter="url(#glow)"/>
+  <!-- Crosshair -->
+  <line x1="256" y1="52" x2="256" y2="92" stroke="#00F2FE" stroke-width="4" opacity="0.6"/>
+  <line x1="256" y1="288" x2="256" y2="328" stroke="#00F2FE" stroke-width="4" opacity="0.6"/>
+  <line x1="118" y1="190" x2="158" y2="190" stroke="#00F2FE" stroke-width="4" opacity="0.6"/>
+  <line x1="354" y1="190" x2="394" y2="190" stroke="#00F2FE" stroke-width="4" opacity="0.6"/>
+
+  <!-- Chart line -->
+  <polyline points="172,244 222,204 252,224 302,152" fill="none" stroke="#7F9CF5"
+            stroke-width="12" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+
+  <!-- Arrow Head -->
+  <path d="M 290 136 L 320 133 L 317 163 Z"
+        fill="#00F2FE"
+        stroke="#00F2FE"
+        stroke-width="2"
+        stroke-linejoin="round"
+        filter="url(#glow)" />
+
+  <!-- Subtitle: DATA SCIENCE -->
+  <text x="256" y="455" text-anchor="middle"
+        font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="16"
+        font-weight="600"
+        fill="#7F9CF5"
+        letter-spacing="6">
+    DATA SCIENCE
+  </text>
+
+  <!-- Korean Subtitle -->
+  <text x="256" y="482" text-anchor="middle"
+        font-family="'Noto Sans KR', system-ui, -apple-system, sans-serif"
+        font-size="13"
+        font-weight="400"
+        fill="#94A3B8"
+        letter-spacing="2">
+    코인렌즈 데이터사이언스
+  </text>
+</svg>
