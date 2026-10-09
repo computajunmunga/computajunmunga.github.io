@@ -164,6 +164,7 @@ function drawScatter() {
             ctx.save();
             market.forEach((v, i) => {
               if (v === null || isNaN(v)) return;
+              if (!c.isDatasetVisible(i)) return; // 꺼진 시간대는 선도 숨김
               const x = c.scales.x.getPixelForValue(v);
               ctx.strokeStyle = colors[i]; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
               ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, bottom); ctx.stroke();
