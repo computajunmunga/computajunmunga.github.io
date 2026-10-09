@@ -22,7 +22,7 @@ jobs:
         run: |
           git config user.name "stats-bot"
           git config user.email "stats-bot@users.noreply.github.com"
-          git add assets/data/rsi.csv assets/data/model_daily.csv
+          git add assets/data/rsi.csv assets/data/model_daily.csv assets/data/rsi_latest.csv
           git diff --cached --quiet && exit 0
           git commit -m "stats refresh $(date -u +%F-%H%M)"
           git pull --rebase -X theirs || true
