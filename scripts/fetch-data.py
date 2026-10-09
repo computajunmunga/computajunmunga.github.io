@@ -10,6 +10,7 @@ BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(BASE, "assets", "data")
 
 PANTRY_PUBLIC = "https://getpantry.cloud/apiv1/public/4e838a05450f87530fe0450439d6a382"
+SYMBOLS_PUBLIC = "https://getpantry.cloud/apiv1/public/4a8477043869bbc5a9736316cf3d123f"
 
 
 def get_json(url):
@@ -60,6 +61,28 @@ def refresh_daily():
     print(f"model_daily.csv: {len(rows)} days")
 
 
+def refresh_symbols():
+    # 심볼별 최신 RSI (산점도용). Coinsimbolrsi 바스켓 symbols 배열 그대로 저장.
+    basket = get_json(SYMBOLS_PUBLIC)
+    rows = basket.get("symbols", []) if isinstance(basket, dict) else []
+    rows = [o for o in rows if isinstance(o, dict) and o.get("symbol")]
+    if not rows:
+        print("symbols 비어있음 → 기존 파일 유지")
+        return
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(["symbol", "rsi15m", "rsi1h", "rsi4h", "rsi1d"])
+    for o in sorted(rows, key=lambda x: x["symbol"]):
+        w.writerow([o.get("symbol"), o.get("rsi15m"), o.get("rsi1h"),
+                    o.get("rsi4h"), o.get("rsi1d")])
+    path = os.path.join(DATA, "rsi_latest.csv")
+    os.makedirs(DATA, exist_ok=True)
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        f.write(buf.getvalue())
+    print(f"rsi_latest.csv: {len(rows)} symbols")
+
+
 if __name__ == "__main__":
     refresh_rsi()
     refresh_daily()
+    refresh_symbols()

@@ -10,15 +10,15 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#0f172a;color:#e2e8f0;font-family:'Segoe UI',system-ui,sans-serif}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid #1e293b}
-.topbar img{height:120px}
-/* .topbar .home{color:#e2e8f0;text-decoration:none;font-size:.9rem;border:1px solid #334155;border-radius:8px;padding:6px 14px} */
+.topbar img{height:64px}
 .wrap{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
 h1{text-align:center;font-size:1.7rem;margin-bottom:4px}
 .sub{text-align:center;color:#94a3b8;font-size:.9rem;margin-bottom:20px}
 .demo{display:inline-block;background:#eab308;color:#000;font-size:.72rem;font-weight:700;border-radius:6px;padding:2px 10px;margin-bottom:10px}
-.panel{background:#031127;border:1px solid #334155;border-radius:12px;padding:16px;margin-bottom:20px}
+.panel{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:16px;margin-bottom:20px}
 .panel h2{font-size:1.05rem;margin-bottom:10px}
 canvas{max-height:340px;width:100%}
+canvas.tall{max-height:520px}
 .note{color:#94a3b8;font-size:.85rem;text-align:center;padding:20px 0}
 footer{text-align:center;color:#64748b;font-size:.78rem;padding:24px 16px;border-top:1px solid #1e293b}
 footer p{margin:4px 0}
@@ -34,7 +34,7 @@ footer p{margin:4px 0}
 </header>
 <div class="wrap">
   <div style="text-align:center;"><span class="demo">DATA</span></div>
-  <h1>Crypto Quant Stats</h1>
+  <h1>📊 Crypto Quant Stats</h1>
   <p class="sub">Futures prediction model statistics</p>
 
   <div class="panel">
@@ -47,6 +47,12 @@ footer p{margin:4px 0}
     <canvas id="chRsi"></canvas>
     <div class="note" id="rsiNote" style="display:none;">RSI 데이터 준비중</div>
   </div>
+
+  <div class="panel">
+    <h2>🎯 RSI Scatter by Symbol (latest)</h2>
+    <canvas id="chScatter" class="tall"></canvas>
+    <div class="note" id="scNote" style="display:none;">심볼 데이터 준비중</div>
+  </div>
 </div>
 <footer>
   <p>© 2026 CoinLens</p>
@@ -58,7 +64,7 @@ footer p{margin:4px 0}
 const grid = { color: 'rgba(148,163,184,.15)' };
 const tick = { color: '#94a3b8' };
 const leg = { labels: { color: '#e2e8f0' } };
-let chModels = null, chRsi = null;
+let chModels = null, chRsi = null, chScatter = null;
 const bust = () => '?t=' + Date.now();
 
 function drawModels() {
@@ -113,9 +119,42 @@ function drawRsi() {
     .catch(() => { document.getElementById('rsiNote').style.display = 'block'; });
 }
 
+function drawScatter() {
+  fetch('./assets/data/rsi_latest.csv' + bust())
+    .then(r => { if (!r.ok) throw 0; return r.text(); })
+    .then(txt => {
+      const rows = txt.trim().split('\n').slice(1).filter(l => l.trim());
+      if (!rows.length) throw 0;
+      const cols = [[], [], [], []];
+      const names = [];
+      rows.forEach((l, i) => {
+        const [s, a, b, c, d] = l.split(',').map(x => x.trim());
+        const vs = [a, b, c, d].map(parseFloat);
+        if (!s || vs.some(isNaN)) return;
+        names.push(s);
+        vs.forEach((v, k) => cols[k].push({ x: v, y: i, s }));
+      });
+      if (!names.length) throw 0;
+      document.getElementById('scNote').style.display = 'none';
+      const colors = ['#f472b6', '#38bdf8', '#eab308', '#2dd4bf'];
+      const tf = ['15m', '1h', '4h', '1d'];
+      if (chScatter) chScatter.destroy();
+      chScatter = new Chart(document.getElementById('chScatter'), { type: 'scatter',
+        data: { datasets: cols.map((data, i) => ({
+          label: 'RSI ' + tf[i], data, backgroundColor: colors[i], pointRadius: 3 })) },
+        options: { plugins: { legend: leg,
+            tooltip: { callbacks: { label: c => ` ${c.raw.s}: ${c.raw.x}` } } },
+          scales: {
+            x: { min: 0, max: 100, grid, ticks: tick, title: { display: true, text: 'RSI', color: '#94a3b8' } },
+            y: { grid: { color: 'rgba(148,163,184,.05)' }, ticks: { display: false } } } } });
+    })
+    .catch(() => { document.getElementById('scNote').style.display = 'block'; });
+}
+
 drawModels();
 drawRsi();
-setInterval(() => { drawModels(); drawRsi(); }, 60000);
+drawScatter();
+setInterval(() => { drawModels(); drawRsi(); drawScatter(); }, 60000);
 </script>
 </body>
 </html>
