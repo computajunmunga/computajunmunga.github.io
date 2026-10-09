@@ -120,10 +120,12 @@ function drawRsi() {
 }
 
 function drawScatter() {
-  fetch('./assets/data/rsi_latest.csv' + bust())
-    .then(r => { if (!r.ok) throw 0; return r.text(); })
-    .then(txt => {
-      const rows = txt.trim().split('\n').slice(1).filter(l => l.trim());
+  Promise.all([
+    fetch('./assets/data/rsi_latest.csv' + bust()).then(r => { if (!r.ok) throw 0; return r.text(); }),
+    fetch('./assets/data/rsi.csv' + bust()).then(r => { if (!r.ok) throw 0; return r.text(); }).catch(() => ''),
+  ])
+    .then(([symTxt, rsiTxt]) => {
+      const rows = symTxt.trim().split('\n').slice(1).filter(l => l.trim());
       if (!rows.length) throw 0;
       const cols = [[], [], [], []];
       const names = [];
@@ -135,6 +137,13 @@ function drawScatter() {
         vs.forEach((v, k) => cols[k].push({ x: v, y: i, s }));
       });
       if (!names.length) throw 0;
+      // 시장평균 최신값 (rsi.csv 마지막 행) → 시간대별 색 수직선
+      let market = [null, null, null, null];
+      const rl = rsiTxt.trim().split('\n').filter(l => l.trim());
+      if (rl.length > 1) {
+        const parts = rl[rl.length - 1].split(/[\t,]+/).map(s => s.trim());
+        market = [parts[1], parts[2], parts[3], parts[4]].map(parseFloat);
+      }
       document.getElementById('scNote').style.display = 'none';
       const colors = ['#f472b6', '#38bdf8', '#eab308', '#2dd4bf'];
       const tf = ['15m', '1h', '4h', '1d'];
@@ -146,7 +155,22 @@ function drawScatter() {
             tooltip: { callbacks: { label: c => ` ${c.raw.s}: ${c.raw.x}` } } },
           scales: {
             x: { min: 0, max: 100, grid, ticks: tick, title: { display: true, text: 'RSI', color: '#94a3b8' } },
-            y: { grid: { color: 'rgba(148,163,184,.05)' }, ticks: { display: false } } } } });
+            y: { grid: { color: 'rgba(148,163,184,.05)' }, ticks: { display: false } } } },
+        plugins: [{
+          id: 'marketlines',
+          afterDraw(c) {
+            const { top, bottom } = c.chartArea;
+            const ctx = c.ctx;
+            ctx.save();
+            market.forEach((v, i) => {
+              if (v === null || isNaN(v)) return;
+              const x = c.scales.x.getPixelForValue(v);
+              ctx.strokeStyle = colors[i]; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+              ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, bottom); ctx.stroke();
+            });
+            ctx.restore();
+          }
+        }] });
     })
     .catch(() => { document.getElementById('scNote').style.display = 'block'; });
 }
