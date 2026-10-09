@@ -1,0 +1,2 @@
+# AdSense publisher ID 거치면 여기에 입력 (예: ca-pub-1234567890123456)
+# google.com, adsense-custom-search-ads committing new ads.txt entries can take up to 24 hours

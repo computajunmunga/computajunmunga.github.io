@@ -1,0 +1,95 @@
+---
+layout: default
+title: Crypto Quant Stats
+description: Futures market model statistics. Sample data demo.
+---
+{% include calculate_relative_base.html %}
+{% include escape-404.html %}
+<style>
+.cqs * { box-sizing: border-box; }
+.cqs { background:#0f172a; color:#e2e8f0; font-family:'Segoe UI',system-ui,sans-serif; }
+.cqs .wrap { max-width:1000px; margin:0 auto; padding:24px 16px 60px; }
+.cqs h1 { text-align:center; font-size:1.7rem; margin-bottom:4px; }
+.cqs .sub { text-align:center; color:#94a3b8; font-size:.9rem; margin-bottom:20px; }
+.cqs .demo { display:inline-block; background:#eab308; color:#000; font-size:.72rem; font-weight:700;
+  border-radius:6px; padding:2px 10px; margin-bottom:10px; }
+.cqs .panel { background:#1e293b; border:1px solid #334155; border-radius:12px; padding:16px; margin-bottom:20px; }
+.cqs .panel h2 { font-size:1.05rem; margin-bottom:10px; }
+.cqs canvas { max-height:340px; }
+.cqs .note { color:#94a3b8; font-size:.85rem; text-align:center; padding:20px 0; }
+</style>
+<div class="flex-container transparent">
+  {% include header.html %}
+  <div class="cqs">
+    <div class="wrap">
+      <div style="text-align:center;"><span class="demo">DATA</span></div>
+      <h1>Crypto Quant Stats</h1>
+      <p class="sub">Futures prediction model statistics</p>
+
+      <div class="panel">
+        <h2>Model Win Rate — Daily (%)</h2>
+        <canvas id="chModels"></canvas>
+      </div>
+
+      <div class="panel">
+        <h2>RSI by Timeframe</h2>
+        <canvas id="chRsi"></canvas>
+        <div class="note" id="rsiNote" style="display:none;">RSI 데이터 준비중</div>
+      </div>
+
+      {% include adsense.html slot="home-mid" %}
+    </div>
+  </div>
+  {% include search.html %}
+  {% include footer.html %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// 데이터: 시간당 GitHub Actions가 갱신하는 로컬 CSV (방문자는 Pantry를 직접 때리지 않음)
+const grid = { color: 'rgba(148,163,184,.15)' };
+const tick = { color: '#94a3b8' };
+const leg = { labels: { color: '#e2e8f0' } };
+
+fetch('{{ relativebase }}assets/data/model_daily.csv')
+  .then(r => r.text())
+  .then(txt => {
+    const rows = txt.trim().split('\n').slice(1).map(l => {
+      const [day, model, n, acc] = l.split(',');
+      return { day: day.slice(5), model, acc: parseFloat(acc) };
+    });
+    const labels = [...new Set(rows.map(r => r.day))];
+    const mk = (model, label, color) => ({
+      label, data: labels.map(d => { const f = rows.find(r => r.day === d && r.model === model); return f ? f.acc : null; }),
+      borderColor: color, tension: .25, pointRadius: 3 });
+    new Chart(document.getElementById('chModels'), { type: 'line',
+      data: { labels, datasets: [mk('model1', 'Model 1', '#22c55e'), mk('model2', 'Model 2', '#3b82f6')] },
+      options: { plugins: { legend: leg },
+        scales: { x: { grid, ticks: tick }, y: { min: 30, max: 45, grid, ticks: tick } } } });
+  });
+
+fetch('{{ relativebase }}assets/data/rsi.csv')
+  .then(r => { if (!r.ok) throw 0; return r.text(); })
+  .then(txt => {
+    const rows = txt.trim().split('\n').slice(1).filter(l => l.trim());
+    if (!rows.length) throw 0;
+    const cols = [[], [], [], []];
+    const labels = [];
+    for (const l of rows) {
+      const [ts, a, b, c, d] = l.split(',');
+      labels.push(ts);
+      cols[0].push(parseFloat(a)); cols[1].push(parseFloat(b));
+      cols[2].push(parseFloat(c)); cols[3].push(parseFloat(d));
+    }
+    const names = ['RSI 15m', 'RSI 1h', 'RSI 4h', 'RSI 1d'];
+    const colors = ['#f472b6', '#38bdf8', '#eab308', '#2dd4bf'];
+    new Chart(document.getElementById('chRsi'), { type: 'line',
+      data: { labels, datasets: cols.map((data, i) => ({
+        label: names[i], data, borderColor: colors[i],
+        tension: .2, pointRadius: 0, borderWidth: 1.5 })) },
+      options: { plugins: { legend: leg }, interaction: { mode: 'index', intersect: false },
+        scales: { x: { grid, ticks: { color: '#94a3b8', maxTicksLimit: 12 } },
+          y: { min: 0, max: 100, grid, ticks: tick } } } });
+  })
+  .catch(() => { document.getElementById('rsiNote').style.display = 'block'; });
+</script>
