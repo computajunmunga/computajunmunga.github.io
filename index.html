@@ -1,53 +1,60 @@
----
-layout: default
-title: Crypto Quant Stats
-description: Futures market model statistics. Sample data demo.
----
-{% include calculate_relative_base.html %}
-{% include escape-404.html %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crypto Quant Stats</title>
+<meta name="description" content="Futures market model statistics.">
+<link rel="icon" href="./assets/img/favicon/favicon.ico" type="image/x-icon">
 <style>
-.cqs * { box-sizing: border-box; }
-.cqs { background:#0f172a; color:#e2e8f0; font-family:'Segoe UI',system-ui,sans-serif; }
-.cqs .wrap { max-width:1000px; margin:0 auto; padding:24px 16px 60px; }
-.cqs h1 { text-align:center; font-size:1.7rem; margin-bottom:4px; }
-.cqs .sub { text-align:center; color:#94a3b8; font-size:.9rem; margin-bottom:20px; }
-.cqs .demo { display:inline-block; background:#eab308; color:#000; font-size:.72rem; font-weight:700;
-  border-radius:6px; padding:2px 10px; margin-bottom:10px; }
-.cqs .panel { background:#1e293b; border:1px solid #334155; border-radius:12px; padding:16px; margin-bottom:20px; }
-.cqs .panel h2 { font-size:1.05rem; margin-bottom:10px; }
-.cqs canvas { max-height:340px; }
-.cqs .note { color:#94a3b8; font-size:.85rem; text-align:center; padding:20px 0; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f172a;color:#e2e8f0;font-family:'Segoe UI',system-ui,sans-serif}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid #1e293b}
+.topbar img{height:40px}
+.topbar .home{color:#e2e8f0;text-decoration:none;font-size:.9rem;border:1px solid #334155;border-radius:8px;padding:6px 14px}
+.wrap{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+h1{text-align:center;font-size:1.7rem;margin-bottom:4px}
+.sub{text-align:center;color:#94a3b8;font-size:.9rem;margin-bottom:20px}
+.demo{display:inline-block;background:#eab308;color:#000;font-size:.72rem;font-weight:700;border-radius:6px;padding:2px 10px;margin-bottom:10px}
+.panel{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:16px;margin-bottom:20px}
+.panel h2{font-size:1.05rem;margin-bottom:10px}
+canvas{max-height:340px;width:100%}
+.note{color:#94a3b8;font-size:.85rem;text-align:center;padding:20px 0}
+footer{text-align:center;color:#64748b;font-size:.78rem;padding:24px 16px;border-top:1px solid #1e293b}
+footer p{margin:4px 0}
 </style>
-<div class="flex-container transparent">
-  {% include header.html %}
-  <div class="cqs">
-    <div class="wrap">
-      <div style="text-align:center;"><span class="demo">DATA</span></div>
-      <h1>Crypto Quant Stats</h1>
-      <p class="sub">Futures prediction model statistics</p>
+<!-- AdSense: publisher ID 발급 후 아래 주석 해제
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script>
+-->
+</head>
+<body>
+<header class="topbar">
+  <a href="./"><img src="./assets/img/branding/coinlens-logo.svg" alt="CoinLens"></a>
+  <a class="home" href="./">Home</a>
+</header>
+<div class="wrap">
+  <div style="text-align:center;"><span class="demo">DATA</span></div>
+  <h1>📊 Crypto Quant Stats</h1>
+  <p class="sub">Futures prediction model statistics</p>
 
-      <div class="panel">
-        <h2>Model Win Rate — Daily (%)</h2>
-        <canvas id="chModels"></canvas>
-      </div>
-
-      <div class="panel">
-        <h2>RSI by Timeframe</h2>
-        <canvas id="chRsi"></canvas>
-        <div class="note" id="rsiNote" style="display:none;">RSI 데이터 준비중</div>
-      </div>
-
-      {% include adsense.html slot="home-mid" %}
-    </div>
+  <div class="panel">
+    <h2>Model Win Rate — Daily (%)</h2>
+    <canvas id="chModels"></canvas>
   </div>
-  {% include search.html %}
-  {% include footer.html %}
+
+  <div class="panel">
+    <h2>Market Average RSI by Timeframe</h2>
+    <canvas id="chRsi"></canvas>
+    <div class="note" id="rsiNote" style="display:none;">RSI 데이터 준비중</div>
+  </div>
 </div>
+<footer>
+  <p>© 2026 CoinLens</p>
+  <p>Research &amp; education only. Not investment advice. Leveraged futures can lose the entire principal.</p>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// 데이터: 시간당 GitHub Actions가 갱신하는 로컬 CSV (방문자는 Pantry를 직접 때리지 않음)
-// 60초마다 자동 새로고침: 캐시버스터로 최신 CSV를 읽고 차트를 다시 그린다.
 const grid = { color: 'rgba(148,163,184,.15)' };
 const tick = { color: '#94a3b8' };
 const leg = { labels: { color: '#e2e8f0' } };
@@ -55,7 +62,7 @@ let chModels = null, chRsi = null;
 const bust = () => '?t=' + Date.now();
 
 function drawModels() {
-  fetch('{{ relativebase }}assets/data/model_daily.csv' + bust())
+  fetch('./assets/data/model_daily.csv' + bust())
     .then(r => r.text())
     .then(txt => {
       const rows = txt.trim().split('\n').slice(1).map(l => {
@@ -76,7 +83,7 @@ function drawModels() {
 }
 
 function drawRsi() {
-  fetch('{{ relativebase }}assets/data/rsi.csv' + bust())
+  fetch('./assets/data/rsi.csv' + bust())
     .then(r => { if (!r.ok) throw 0; return r.text(); })
     .then(txt => {
       const rows = txt.trim().split('\n').slice(1).filter(l => l.trim());
@@ -84,11 +91,13 @@ function drawRsi() {
       const cols = [[], [], [], []];
       const labels = [];
       for (const l of rows) {
-        const [ts, a, b, c, d] = l.split(',');
+        const [ts, a, b, c, d] = l.split(/[\t,]+/).map(s => s.trim());
+        if (!ts || isNaN(parseFloat(a))) continue;
         labels.push(ts);
         cols[0].push(parseFloat(a)); cols[1].push(parseFloat(b));
         cols[2].push(parseFloat(c)); cols[3].push(parseFloat(d));
       }
+      if (!labels.length) throw 0;
       const names = ['RSI 15m', 'RSI 1h', 'RSI 4h', 'RSI 1d'];
       const colors = ['#f472b6', '#38bdf8', '#eab308', '#2dd4bf'];
       document.getElementById('rsiNote').style.display = 'none';
@@ -108,3 +117,5 @@ drawModels();
 drawRsi();
 setInterval(() => { drawModels(); drawRsi(); }, 60000);
 </script>
+</body>
+</html>
