@@ -568,7 +568,7 @@ if (fbForm) {
         headers: { 'Accept': 'application/json' },
       });
       if (!res.ok) throw new Error('전송 실패');
-      msg.textContent = '✅ 감사합니다! 피드백이 전송되었습니다. 첫 전송 후 받은 편지함에서 FormSubmit 인증 메일을 승인해야 수신됩니다.';
+      msg.textContent = '✅ 감사합니다! 피드백이 전송되었습니다.';
       msg.className = 'fb-msg ok';
       fbForm.reset();
     } catch (err) {
