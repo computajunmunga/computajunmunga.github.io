@@ -15,19 +15,33 @@ body{background:#0f172a;color:#e2e8f0;font-family:'Segoe UI',system-ui,sans-seri
 h1{text-align:center;font-size:1.7rem;margin-bottom:4px}
 .sub{text-align:center;color:#94a3b8;font-size:.9rem;margin-bottom:20px}
 .demo{display:inline-block;background:#eab308;color:#000;font-size:.72rem;font-weight:700;border-radius:6px;padding:2px 10px;margin-bottom:10px}
-.panel{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:16px;margin-bottom:20px}
+.panel{background:rgba(30,41,59,.82);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid #334155;border-radius:12px;padding:16px;margin-bottom:20px}
 .panel h2{font-size:1.05rem;margin-bottom:10px}
 canvas{max-height:340px;width:100%}
 canvas.tall{max-height:520px}
 .note{color:#94a3b8;font-size:.85rem;text-align:center;padding:20px 0}
 footer{text-align:center;color:#64748b;font-size:.78rem;padding:24px 16px;border-top:1px solid #1e293b}
 footer p{margin:4px 0}
+
+/* ── 3D 코인 배경 ── */
+/* 위의 canvas{max-height:340px} 규칙이 배경 캔버스를 잘라내지 않도록 #bg 에서 해제 */
+#bg{position:fixed;inset:0;width:100%;height:100%;max-height:none;display:block;z-index:-1;pointer-events:none}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at center,transparent 50%,rgba(2,6,23,.5) 100%)}
 </style>
 <!-- AdSense: publisher ID 발급 후 아래 주석 해제
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script>
 -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
 </head>
 <body>
+<canvas id="bg" aria-hidden="true"></canvas>
 <header class="topbar">
   <a href="./"><img src="./assets/img/branding/coinlens-logo.svg" alt="CoinLens"></a>
   <!-- <a class="home" href="./">Home</a> -->
@@ -180,6 +194,318 @@ drawModels();
 drawRsi();
 drawScatter();
 setInterval(() => { drawModels(); drawRsi(); drawScatter(); }, 60000);
+</script>
+
+<!-- 3D 코인 배경 (three.js) -->
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+// ============================================================
+// ★ 설정 (숫자만 바꾸면 분위기가 바뀝니다) ★
+// ============================================================
+const CONFIG = {
+  coinCount: 26,          // 코인 개수 (휴대폰에서는 자동으로 줄어듦)
+  sparkleCount: 320,      // 반짝이는 입자 개수
+  speed: 1.0,             // 전체 움직임 속도 (0.5 = 절반, 2 = 두 배)
+  bloom: true,            // 빛 번짐 효과 (느린 기기에서는 false)
+  chart: true,            // 뒤쪽에 희미하게 흐르는 시세 차트 선
+  maxPixelRatio: 1.5,      // 고해상도 화면 렌더링 상한 (낮추면 가벼워짐)
+  background: 0x202b3f,   // 배경색 (톤 보정 후 화면에서 #0f172a 와 같게 보이도록 조정한 값)
+  // 코인 색: [색, 나올 비율]  (금 / 은 / 로즈골드)
+  tints: [[0xf2b53d, 0.62], [0xdfe6ee, 0.22], [0xe39a86, 0.16]],
+};
+
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SPEED = CONFIG.speed * (reduceMotion ? 0.2 : 1);
+const isSmall = Math.min(innerWidth, innerHeight) < 700;
+const COIN_COUNT = Math.round(CONFIG.coinCount * (isSmall ? 0.55 : 1));
+
+// ============================================================
+const canvas = document.getElementById('bg');
+
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+} catch (e) {
+  console.warn('WebGL 을 사용할 수 없어 CSS 배경만 표시합니다.', e);
+}
+
+if (renderer) init();
+
+function init() {
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(CONFIG.background);
+  scene.fog = new THREE.FogExp2(CONFIG.background, 0.034);
+
+  const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 120);
+  camera.position.set(0, 0, 10);
+  const TAN = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+
+  // 금속 반사용 환경맵 (three.js 예제의 RoomEnvironment)
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+  // 조명
+  const key = new THREE.DirectionalLight(0xffdcaa, 1.7);
+  key.position.set(-5, 7, 8);
+  scene.add(key);
+  const teal = new THREE.PointLight(0x2dd4bf, 55, 40, 2);
+  teal.position.set(10, -7, 0);
+  scene.add(teal);
+  const amber = new THREE.PointLight(0xffa24d, 70, 40, 2);
+  amber.position.set(-10, 6, 1);
+  scene.add(amber);
+
+  // ---------------- 코인 텍스처 (코드로 그림) ----------------
+  function roundRect(ctx, x, y, w, h, r) {
+    if (ctx.roundRect) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.fill(); }
+    else ctx.fillRect(x, y, w, h);
+  }
+
+  // 코인 앞뒤 면: 캔들 차트 모양 엠블럼 + 테두리 링 + 점선
+  function paintFace(ctx, S, c) {
+    const R = S / 2, cx = R, cy = R;
+    ctx.fillStyle = c.base;   ctx.fillRect(0, 0, S, S);
+    ctx.fillStyle = c.recess; ctx.beginPath(); ctx.arc(cx, cy, R * 0.69, 0, Math.PI * 2); ctx.fill();
+
+    ctx.strokeStyle = c.raised; ctx.lineWidth = R * 0.075;
+    ctx.beginPath(); ctx.arc(cx, cy, R * 0.80, 0, Math.PI * 2); ctx.stroke();
+
+    ctx.fillStyle = c.raised;
+    for (let i = 0; i < 64; i++) {
+      const a = (i / 64) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.arc(cx + Math.cos(a) * R * 0.89, cy + Math.sin(a) * R * 0.89, R * 0.017, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    const candles = [
+      { x: -0.30, b0:  0.04, b1:  0.34, w0: -0.06, w1: 0.44 },
+      { x:  0.00, b0: -0.20, b1:  0.14, w0: -0.34, w1: 0.28 },
+      { x:  0.30, b0: -0.46, b1: -0.06, w0: -0.58, w1: 0.06 },
+    ];
+    ctx.strokeStyle = c.raised; ctx.lineWidth = R * 0.03; ctx.fillStyle = c.raised;
+    for (const k of candles) {
+      ctx.beginPath(); ctx.moveTo(cx + k.x * R, cy + k.w0 * R); ctx.lineTo(cx + k.x * R, cy + k.w1 * R); ctx.stroke();
+      roundRect(ctx, cx + (k.x - 0.085) * R, cy + k.b0 * R, 0.17 * R, (k.b1 - k.b0) * R, R * 0.025);
+    }
+  }
+
+  function canvasTex(size, draw, srgb) {
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = size;
+    draw(cv.getContext('2d'), size);
+    const t = new THREE.CanvasTexture(cv);
+    t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  }
+
+  const faceMap  = canvasTex(512, (g, S) => paintFace(g, S, { base: '#e6e6e6', recess: '#bcbcbc', raised: '#ffffff' }), true);
+  const faceBump = canvasTex(512, (g, S) => paintFace(g, S, { base: '#808080', recess: '#3c3c3c', raised: '#ffffff' }), false);
+
+  // 코인 옆면의 톱니 무늬
+  const edgeCv = document.createElement('canvas');
+  edgeCv.width = 256; edgeCv.height = 8;
+  { const g = edgeCv.getContext('2d');
+    for (let i = 0; i < 64; i++) { g.fillStyle = i % 2 ? '#ffffff' : '#8a8a8a'; g.fillRect(i * 4, 0, 4, 8); } }
+  const edgeMap = new THREE.CanvasTexture(edgeCv);
+  edgeMap.colorSpace = THREE.SRGBColorSpace;
+  edgeMap.wrapS = THREE.RepeatWrapping;
+
+  // ---------------- 코인 ----------------
+  const bodyGeo = new THREE.CylinderGeometry(1, 1, 0.13, 72, 1);
+  const rimGeo  = new THREE.TorusGeometry(0.955, 0.045, 14, 72);
+  rimGeo.rotateX(Math.PI / 2);
+
+  const kits = CONFIG.tints.map(([color, weight]) => ({
+    weight,
+    side: new THREE.MeshStandardMaterial({ color, map: edgeMap, bumpMap: edgeMap, bumpScale: 2, metalness: 1, roughness: 0.32 }),
+    face: new THREE.MeshStandardMaterial({ color, map: faceMap, bumpMap: faceBump, bumpScale: 6, metalness: 1, roughness: 0.26 }),
+    rim:  new THREE.MeshStandardMaterial({ color, metalness: 1, roughness: 0.2 }),
+  }));
+
+  function pickKit() {
+    let r = Math.random() * kits.reduce((s, k) => s + k.weight, 0);
+    for (const k of kits) { if ((r -= k.weight) <= 0) return k; }
+    return kits[0];
+  }
+
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const halfH = (z) => (camera.position.z - z) * TAN;        // 깊이 z 에서 화면 세로 절반 크기
+  let aspect = 1;
+
+  const coins = [];
+  for (let i = 0; i < COIN_COUNT; i++) {
+    const kit = pickKit();
+    const g = new THREE.Group();
+    g.add(new THREE.Mesh(bodyGeo, [kit.side, kit.face, kit.face]));
+    const r1 = new THREE.Mesh(rimGeo, kit.rim); r1.position.y =  0.065;
+    const r2 = new THREE.Mesh(rimGeo, kit.rim); r2.position.y = -0.065;
+    g.add(r1, r2);
+
+    const z = -Math.pow(Math.random(), 0.8) * 17 + 2.5;       // 먼 쪽에 더 많이
+    const near = z > 0;
+    const s = near ? rand(0.35, 0.55) : rand(0.5, 1.05);
+    g.scale.setScalar(s);
+    g.rotation.set(rand(0, 6.28), rand(0, 6.28), rand(0, 6.28));
+    scene.add(g);
+
+    coins.push({
+      g, z, s,
+      nx: rand(-1.15, 1.15),                  // 가로 위치 (화면 절반 대비 비율)
+      ny: rand(-1.2, 1.2),                    // 세로 위치
+      vy: rand(0.018, 0.05),                  // 올라가는 속도 (화면 절반/초)
+      rx: rand(-0.9, 0.9), ry: rand(-0.7, 0.7), rz: rand(-0.5, 0.5),
+      swayA: rand(0.1, 0.5), swayF: rand(0.2, 0.6), ph: rand(0, 6.28),
+    });
+  }
+
+  // ---------------- 반짝이는 입자 ----------------
+  const sparkTex = canvasTex(64, (g, S) => {
+    const gr = g.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2);
+    gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,.35)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, S, S);
+  }, true);
+
+  const SP = CONFIG.sparkleCount;
+  const sparkPos = new Float32Array(SP * 3);
+  const sparkN = [];                                           // 정규화 좌표
+  for (let i = 0; i < SP; i++) sparkN.push({ nx: rand(-1.1, 1.1), ny: rand(-1.1, 1.1), z: rand(-14, 4), v: rand(0.01, 0.045) });
+  const sparkGeo = new THREE.BufferGeometry();
+  sparkGeo.setAttribute('position', new THREE.BufferAttribute(sparkPos, 3));
+  const sparks = new THREE.Points(sparkGeo, new THREE.PointsMaterial({
+    size: 0.16, map: sparkTex, color: 0xffd27a, transparent: true, opacity: 0.85,
+    depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true,
+  }));
+  sparks.frustumCulled = false;
+  scene.add(sparks);
+
+  // ---------------- 뒤쪽에 흐르는 시세 차트 ----------------
+  const N = 140, SPAN = 80, DX = SPAN / (N - 1), STEP = 0.4;
+  const series = [];
+  { let v = 0; for (let i = 0; i < N; i++) { v += rand(-0.7, 0.7) - v * 0.06; series.push(v); } }
+  const chartPos = new Float32Array(N * 3);
+  const chartGeo = new THREE.BufferGeometry();
+  chartGeo.setAttribute('position', new THREE.BufferAttribute(chartPos, 3));
+  const chart = new THREE.Line(chartGeo, new THREE.LineBasicMaterial({ color: 0x2dd4bf, transparent: true, opacity: 0.3, fog: false }));
+  chart.position.set(0, -1.5, -19);
+  chart.visible = CONFIG.chart;
+  scene.add(chart);
+
+  // 희미한 가로 눈금선
+  const gridPts = [];
+  for (let i = -4; i <= 4; i++) gridPts.push(-SPAN / 2, i * 3, 0, SPAN / 2, i * 3, 0);
+  const grid = new THREE.LineSegments(
+    new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(gridPts, 3)),
+    new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.022, fog: false })
+  );
+  grid.position.set(0, 0, -19.5);
+  grid.visible = false;   // 이 페이지에서는 가로 눈금선을 숨김 (페이지 테두리선처럼 보이기 때문)
+  scene.add(grid);
+
+  let chartAcc = 0;
+  function writeChart() {
+    for (let i = 0; i < N; i++) {
+      chartPos[i * 3] = (i / (N - 1) - 0.5) * SPAN;
+      chartPos[i * 3 + 1] = series[i];
+      chartPos[i * 3 + 2] = 0;
+    }
+    chartGeo.attributes.position.needsUpdate = true;
+  }
+  writeChart();
+
+  // ---------------- 후처리 (빛 번짐) ----------------
+  let composer = null, bloom = null;
+  if (CONFIG.bloom) {
+    composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 }));
+    composer.addPass(new RenderPass(scene, camera));
+    bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.42, 0.6, 0.88);
+    composer.addPass(bloom);
+    composer.addPass(new OutputPass());
+  }
+
+  // ---------------- 크기 / 마우스 ----------------
+  function resize() {
+    const w = innerWidth, h = innerHeight;
+    const pr = Math.min(devicePixelRatio || 1, CONFIG.maxPixelRatio);
+    renderer.setPixelRatio(pr);
+    renderer.setSize(w, h, false);
+    aspect = w / h;
+    camera.aspect = aspect;
+    camera.updateProjectionMatrix();
+    if (composer) { composer.setPixelRatio(pr); composer.setSize(w, h); }
+  }
+  addEventListener('resize', resize);
+  resize();
+
+  const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
+  addEventListener('pointermove', (e) => {
+    mouse.tx = (e.clientX / innerWidth) * 2 - 1;
+    mouse.ty = (e.clientY / innerHeight) * 2 - 1;
+  }, { passive: true });
+
+  // ---------------- 애니메이션 ----------------
+  const clock = new THREE.Clock();
+  let t = 0;
+
+  function frame() {
+    const dt = Math.min(clock.getDelta(), 0.05) * SPEED;
+    t += dt;
+
+    // 카메라가 마우스를 따라 살짝 움직임
+    mouse.x += (mouse.tx - mouse.x) * 0.04;
+    mouse.y += (mouse.ty - mouse.y) * 0.04;
+    camera.position.x = mouse.x * 0.9;
+    camera.position.y = -mouse.y * 0.6;
+    camera.lookAt(0, 0, 0);
+
+    for (const c of coins) {
+      const hh = halfH(c.z), hw = hh * aspect;
+      c.ny += c.vy * dt;
+      if (c.ny > 1.15) { c.ny = -1.15; c.nx = rand(-1.15, 1.15); }
+      c.g.position.set(c.nx * hw + Math.sin(t * c.swayF + c.ph) * c.swayA, c.ny * hh, c.z);
+      c.g.rotation.x += c.rx * dt;
+      c.g.rotation.y += c.ry * dt;
+      c.g.rotation.z += c.rz * dt;
+    }
+
+    for (let i = 0; i < SP; i++) {
+      const s = sparkN[i];
+      s.ny += s.v * dt;
+      if (s.ny > 1.1) { s.ny = -1.1; s.nx = rand(-1.1, 1.1); }
+      const hh = halfH(s.z);
+      sparkPos[i * 3]     = s.nx * hh * aspect;
+      sparkPos[i * 3 + 1] = s.ny * hh;
+      sparkPos[i * 3 + 2] = s.z;
+    }
+    sparkGeo.attributes.position.needsUpdate = true;
+
+    if (CONFIG.chart) {
+      chartAcc += dt;
+      while (chartAcc >= STEP) {
+        chartAcc -= STEP;
+        series.shift();
+        const last = series[series.length - 1];
+        series.push(last + rand(-0.8, 0.8) - last * 0.06);
+        writeChart();
+      }
+      chart.position.x = -(chartAcc / STEP) * DX;
+    }
+
+    if (composer) composer.render(); else renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  frame();
+}
 </script>
 </body>
 </html>
