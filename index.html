@@ -22,6 +22,22 @@ canvas.tall{max-height:520px}
 .note{color:#94a3b8;font-size:.85rem;text-align:center;padding:20px 0}
 footer{text-align:center;color:#64748b;font-size:.78rem;padding:24px 16px;border-top:1px solid #1e293b}
 footer p{margin:4px 0}
+/* ── 피드백 폼 ── */
+.fb-desc{color:#94a3b8;font-size:.88rem;margin-bottom:12px;line-height:1.5}
+.fb-form{display:flex;flex-direction:column;gap:12px}
+.fb-label{font-size:.88rem;font-weight:600;color:#cbd5e1}
+.fb-radio{display:flex;gap:8px;flex-wrap:wrap}
+.fb-radio label{display:flex;align-items:center;gap:6px;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:8px 12px;font-size:.85rem;cursor:pointer}
+.fb-radio input{accent-color:#22c55e}
+.fb-form input[type=text],.fb-form input[type=email],.fb-form textarea,.fb-form select{background:#0f172a;border:1px solid #334155;border-radius:8px;color:#e2e8f0;padding:10px 12px;font-size:.9rem;width:100%;font-family:inherit}
+.fb-form textarea{resize:vertical;min-height:80px}
+.fb-form input:focus,.fb-form textarea:focus{outline:none;border-color:#38bdf8}
+.fb-btn{background:#22c55e;color:#052e16;font-weight:700;border:none;border-radius:8px;padding:12px;font-size:.95rem;cursor:pointer}
+.fb-btn:hover{background:#16a34a}
+.fb-btn:disabled{opacity:.6;cursor:wait}
+.fb-msg{font-size:.85rem;min-height:1.2em}
+.fb-msg.ok{color:#22c55e}
+.fb-msg.err{color:#f87171}
 
 /* ── 3D 코인 배경 ── */
 /* 위의 canvas{max-height:340px} 규칙이 배경 캔버스를 잘라내지 않도록 #bg 에서 해제 */
@@ -66,6 +82,28 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
     <h2>🎯 RSI Scatter by Symbol (latest)</h2>
     <canvas id="chScatter" class="tall"></canvas>
     <div class="note" id="scNote" style="display:none;">심볼 데이터 준비중</div>
+  </div>
+
+  <div class="panel">
+    <h2>💬 피드백</h2>
+    <p class="fb-desc">데이터 시각화가 실제 도움이 되고 있나요? 보고 싶은 새로운 지표 시각화가 있다면 알려주세요. 보내주신 내용은 이메일로 전달됩니다.</p>
+    <form id="fbForm" class="fb-form">
+      <span class="fb-label">1. 지금 시각화가 도움이 되나요?</span>
+      <div class="fb-radio">
+        <label><input type="radio" name="helpful" value="매우 도움됨" required> 매우 도움됨</label>
+        <label><input type="radio" name="helpful" value="보통"> 보통</label>
+        <label><input type="radio" name="helpful" value="별로"> 별로</label>
+      </div>
+      <label class="fb-label" for="fbNeed">2. 새로 필요한 지표 / 시각화는?</label>
+      <textarea id="fbNeed" name="needed" placeholder="예: 펀딩비 히트맵, 청산맵, 변동성 밴드 차트..." required></textarea>
+      <label class="fb-label" for="fbFree">3. 자유 의견 (선택)</label>
+      <textarea id="fbFree" name="message" placeholder="불편한 점, 개선 아이디어 등"></textarea>
+      <label class="fb-label" for="fbEmail">답변받을 이메일 (선택)</label>
+      <input id="fbEmail" type="email" name="reply_to" placeholder="you@example.com">
+      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+      <button type="submit" class="fb-btn" id="fbBtn">피드백 보내기</button>
+      <p class="fb-msg" id="fbMsg" role="status"></p>
+    </form>
   </div>
 </div>
 <footer>
@@ -505,6 +543,41 @@ function init() {
     requestAnimationFrame(frame);
   }
   frame();
+}
+<script>
+/* 받는 이메일 */
+const FEEDBACK_TO = 'artnzard@gmail.com';
+const fbForm = document.getElementById('fbForm');
+if (fbForm) {
+  fbForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('fbBtn');
+    const msg = document.getElementById('fbMsg');
+    btn.disabled = true;
+    btn.textContent = '전송 중...';
+    msg.textContent = '';
+    msg.className = 'fb-msg';
+    try {
+      const data = new FormData(fbForm);
+      data.append('_subject', '[CoinLens] 새 피드백 도착');
+      data.append('_template', 'table');
+      const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(FEEDBACK_TO), {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' },
+      });
+      if (!res.ok) throw new Error('전송 실패');
+      msg.textContent = '✅ 감사합니다! 피드백이 전송되었습니다. 첫 전송 후 받은 편지함에서 FormSubmit 인증 메일을 승인해야 수신됩니다.';
+      msg.className = 'fb-msg ok';
+      fbForm.reset();
+    } catch (err) {
+      msg.textContent = '❌ 전송에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+      msg.className = 'fb-msg err';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '피드백 보내기';
+    }
+  });
 }
 </script>
 </body>
