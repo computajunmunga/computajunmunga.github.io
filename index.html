@@ -546,8 +546,12 @@ function init() {
 }
 </script>
 <script>
-/* 받는 이메일 */
-const FEEDBACK_TO = 'artnzard@gmail.com';
+/* 받는 이메일 (수집봇 회피용으로 쪼개어 조립) */
+const _m1 = 'artnz';
+const _m2 = 'ard@gm';
+const _m3 = 'ail.c';
+const _m4 = 'om';
+const FEEDBACK_TO = _m1 + _m2 + _m3 + _m4;
 const fbForm = document.getElementById('fbForm');
 if (fbForm) {
   fbForm.addEventListener('submit', async (e) => {
