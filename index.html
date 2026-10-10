@@ -22,7 +22,6 @@ canvas.tall{max-height:520px}
 .note{color:#94a3b8;font-size:.85rem;text-align:center;padding:20px 0}
 footer{text-align:center;color:#64748b;font-size:.78rem;padding:24px 16px;border-top:1px solid #1e293b}
 footer p{margin:4px 0}
-/* ── 피드백 폼 ── */
 .fb-desc{color:#94a3b8;font-size:.88rem;margin-bottom:12px;line-height:1.5}
 .fb-form{display:flex;flex-direction:column;gap:12px}
 .fb-label{font-size:.88rem;font-weight:600;color:#cbd5e1}
@@ -39,14 +38,9 @@ footer p{margin:4px 0}
 .fb-msg.ok{color:#22c55e}
 .fb-msg.err{color:#f87171}
 
-/* ── 3D 코인 배경 ── */
-/* 위의 canvas{max-height:340px} 규칙이 배경 캔버스를 잘라내지 않도록 #bg 에서 해제 */
 #bg{position:fixed;inset:0;width:100%;height:100%;max-height:none;display:block;z-index:-1;pointer-events:none}
 body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at center,transparent 50%,rgba(2,6,23,.5) 100%)}
 </style>
-<!-- AdSense: publisher ID 발급 후 아래 주석 해제
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script>
--->
 <script type="importmap">
 {
   "imports": {
@@ -60,7 +54,6 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 <canvas id="bg" aria-hidden="true"></canvas>
 <header class="topbar">
   <a href="./"><img src="./assets/img/branding/coinlens-logo.svg" alt="CoinLens"></a>
-  <!-- <a class="home" href="./">Home</a> -->
 </header>
 <div class="wrap">
   <div style="text-align:center;"><span class="demo">DATA</span></div>
@@ -189,7 +182,6 @@ function drawScatter() {
         vs.forEach((v, k) => cols[k].push({ x: v, y: i, s }));
       });
       if (!names.length) throw 0;
-      // 시장평균 최신값 (rsi.csv 마지막 행) → 시간대별 색 수직선
       let market = [null, null, null, null];
       const rl = rsiTxt.trim().split('\n').filter(l => l.trim());
       if (rl.length > 1) {
@@ -216,7 +208,7 @@ function drawScatter() {
             ctx.save();
             market.forEach((v, i) => {
               if (v === null || isNaN(v)) return;
-              if (!c.isDatasetVisible(i)) return; // 꺼진 시간대는 선도 숨김
+              if (!c.isDatasetVisible(i)) return;
               const x = c.scales.x.getPixelForValue(v);
               ctx.strokeStyle = colors[i]; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
               ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, bottom); ctx.stroke();
@@ -234,7 +226,6 @@ drawScatter();
 setInterval(() => { drawModels(); drawRsi(); drawScatter(); }, 60000);
 </script>
 
-<!-- 3D 코인 배경 (three.js) -->
 <script type="module">
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
@@ -243,18 +234,14 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-// ============================================================
-// ★ 설정 (숫자만 바꾸면 분위기가 바뀝니다) ★
-// ============================================================
 const CONFIG = {
-  coinCount: 26,          // 코인 개수 (휴대폰에서는 자동으로 줄어듦)
-  sparkleCount: 320,      // 반짝이는 입자 개수
-  speed: 1.0,             // 전체 움직임 속도 (0.5 = 절반, 2 = 두 배)
-  bloom: true,            // 빛 번짐 효과 (느린 기기에서는 false)
-  chart: true,            // 뒤쪽에 희미하게 흐르는 시세 차트 선
-  maxPixelRatio: 1.5,      // 고해상도 화면 렌더링 상한 (낮추면 가벼워짐)
-  background: 0x202b3f,   // 배경색 (톤 보정 후 화면에서 #0f172a 와 같게 보이도록 조정한 값)
-  // 코인 색: [색, 나올 비율]  (금 / 은 / 로즈골드)
+  coinCount: 26,
+  sparkleCount: 320,
+  speed: 1.0,
+  bloom: true,
+  chart: true,
+  maxPixelRatio: 1.5,
+  background: 0x202b3f,
   tints: [[0xf2b53d, 0.62], [0xdfe6ee, 0.22], [0xe39a86, 0.16]],
 };
 
@@ -263,7 +250,6 @@ const SPEED = CONFIG.speed * (reduceMotion ? 0.2 : 1);
 const isSmall = Math.min(innerWidth, innerHeight) < 700;
 const COIN_COUNT = Math.round(CONFIG.coinCount * (isSmall ? 0.55 : 1));
 
-// ============================================================
 const canvas = document.getElementById('bg');
 
 let renderer;
@@ -287,11 +273,9 @@ function init() {
   camera.position.set(0, 0, 10);
   const TAN = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
 
-  // 금속 반사용 환경맵 (three.js 예제의 RoomEnvironment)
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
-  // 조명
   const key = new THREE.DirectionalLight(0xffdcaa, 1.7);
   key.position.set(-5, 7, 8);
   scene.add(key);
@@ -302,13 +286,11 @@ function init() {
   amber.position.set(-10, 6, 1);
   scene.add(amber);
 
-  // ---------------- 코인 텍스처 (코드로 그림) ----------------
   function roundRect(ctx, x, y, w, h, r) {
     if (ctx.roundRect) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.fill(); }
     else ctx.fillRect(x, y, w, h);
   }
 
-  // 코인 앞뒤 면: 캔들 차트 모양 엠블럼 + 테두리 링 + 점선
   function paintFace(ctx, S, c) {
     const R = S / 2, cx = R, cy = R;
     ctx.fillStyle = c.base;   ctx.fillRect(0, 0, S, S);
@@ -350,7 +332,6 @@ function init() {
   const faceMap  = canvasTex(512, (g, S) => paintFace(g, S, { base: '#e6e6e6', recess: '#bcbcbc', raised: '#ffffff' }), true);
   const faceBump = canvasTex(512, (g, S) => paintFace(g, S, { base: '#808080', recess: '#3c3c3c', raised: '#ffffff' }), false);
 
-  // 코인 옆면의 톱니 무늬
   const edgeCv = document.createElement('canvas');
   edgeCv.width = 256; edgeCv.height = 8;
   { const g = edgeCv.getContext('2d');
@@ -359,7 +340,6 @@ function init() {
   edgeMap.colorSpace = THREE.SRGBColorSpace;
   edgeMap.wrapS = THREE.RepeatWrapping;
 
-  // ---------------- 코인 ----------------
   const bodyGeo = new THREE.CylinderGeometry(1, 1, 0.13, 72, 1);
   const rimGeo  = new THREE.TorusGeometry(0.955, 0.045, 14, 72);
   rimGeo.rotateX(Math.PI / 2);
@@ -378,7 +358,7 @@ function init() {
   }
 
   const rand = (a, b) => a + Math.random() * (b - a);
-  const halfH = (z) => (camera.position.z - z) * TAN;        // 깊이 z 에서 화면 세로 절반 크기
+  const halfH = (z) => (camera.position.z - z) * TAN;
   let aspect = 1;
 
   const coins = [];
@@ -390,7 +370,7 @@ function init() {
     const r2 = new THREE.Mesh(rimGeo, kit.rim); r2.position.y = -0.065;
     g.add(r1, r2);
 
-    const z = -Math.pow(Math.random(), 0.8) * 17 + 2.5;       // 먼 쪽에 더 많이
+    const z = -Math.pow(Math.random(), 0.8) * 17 + 2.5;
     const near = z > 0;
     const s = near ? rand(0.35, 0.55) : rand(0.5, 1.05);
     g.scale.setScalar(s);
@@ -399,15 +379,14 @@ function init() {
 
     coins.push({
       g, z, s,
-      nx: rand(-1.15, 1.15),                  // 가로 위치 (화면 절반 대비 비율)
-      ny: rand(-1.2, 1.2),                    // 세로 위치
-      vy: rand(0.018, 0.05),                  // 올라가는 속도 (화면 절반/초)
+      nx: rand(-1.15, 1.15),
+      ny: rand(-1.2, 1.2),
+      vy: rand(0.018, 0.05),
       rx: rand(-0.9, 0.9), ry: rand(-0.7, 0.7), rz: rand(-0.5, 0.5),
       swayA: rand(0.1, 0.5), swayF: rand(0.2, 0.6), ph: rand(0, 6.28),
     });
   }
 
-  // ---------------- 반짝이는 입자 ----------------
   const sparkTex = canvasTex(64, (g, S) => {
     const gr = g.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2);
     gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,.35)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
@@ -416,7 +395,7 @@ function init() {
 
   const SP = CONFIG.sparkleCount;
   const sparkPos = new Float32Array(SP * 3);
-  const sparkN = [];                                           // 정규화 좌표
+  const sparkN = [];
   for (let i = 0; i < SP; i++) sparkN.push({ nx: rand(-1.1, 1.1), ny: rand(-1.1, 1.1), z: rand(-14, 4), v: rand(0.01, 0.045) });
   const sparkGeo = new THREE.BufferGeometry();
   sparkGeo.setAttribute('position', new THREE.BufferAttribute(sparkPos, 3));
@@ -427,7 +406,6 @@ function init() {
   sparks.frustumCulled = false;
   scene.add(sparks);
 
-  // ---------------- 뒤쪽에 흐르는 시세 차트 ----------------
   const N = 140, SPAN = 80, DX = SPAN / (N - 1), STEP = 0.4;
   const series = [];
   { let v = 0; for (let i = 0; i < N; i++) { v += rand(-0.7, 0.7) - v * 0.06; series.push(v); } }
@@ -439,7 +417,6 @@ function init() {
   chart.visible = CONFIG.chart;
   scene.add(chart);
 
-  // 희미한 가로 눈금선
   const gridPts = [];
   for (let i = -4; i <= 4; i++) gridPts.push(-SPAN / 2, i * 3, 0, SPAN / 2, i * 3, 0);
   const grid = new THREE.LineSegments(
@@ -447,7 +424,7 @@ function init() {
     new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.022, fog: false })
   );
   grid.position.set(0, 0, -19.5);
-  grid.visible = false;   // 이 페이지에서는 가로 눈금선을 숨김 (페이지 테두리선처럼 보이기 때문)
+  grid.visible = false;
   scene.add(grid);
 
   let chartAcc = 0;
@@ -461,7 +438,6 @@ function init() {
   }
   writeChart();
 
-  // ---------------- 후처리 (빛 번짐) ----------------
   let composer = null, bloom = null;
   if (CONFIG.bloom) {
     composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 }));
@@ -471,7 +447,6 @@ function init() {
     composer.addPass(new OutputPass());
   }
 
-  // ---------------- 크기 / 마우스 ----------------
   function resize() {
     const w = innerWidth, h = innerHeight;
     const pr = Math.min(devicePixelRatio || 1, CONFIG.maxPixelRatio);
@@ -491,7 +466,6 @@ function init() {
     mouse.ty = (e.clientY / innerHeight) * 2 - 1;
   }, { passive: true });
 
-  // ---------------- 애니메이션 ----------------
   const clock = new THREE.Clock();
   let t = 0;
 
@@ -499,7 +473,6 @@ function init() {
     const dt = Math.min(clock.getDelta(), 0.05) * SPEED;
     t += dt;
 
-    // 카메라가 마우스를 따라 살짝 움직임
     mouse.x += (mouse.tx - mouse.x) * 0.04;
     mouse.y += (mouse.ty - mouse.y) * 0.04;
     camera.position.x = mouse.x * 0.9;
@@ -546,7 +519,6 @@ function init() {
 }
 </script>
 <script>
-/* 받는 이메일 (수집봇 회피용으로 쪼개어 조립) */
 const _m1 = 'artnz';
 const _m2 = 'ard@gm';
 const _m3 = 'ail.c';
