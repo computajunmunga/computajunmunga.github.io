@@ -11,3 +11,11 @@
 /.vscode/
 /.idea/
 .liquidrc
+# secrets (local追加)
+*.key
+*.pem
+.env
+*password*
+*secret*
+*token*
+config*.json
