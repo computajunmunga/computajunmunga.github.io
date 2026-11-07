@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ko" class="after">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>테마 적용 미리보기 — 아트로그</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+html.after{
+  --bg:#0f172a; --panel:#141d33; --panel2:#1b2740; --text:#cbd5e1; --post:#c9d4e8;
+  --title:#f8fafc; --byline:rgba(148,163,184,.75); --link:#7dd3fc; --linkv:#a5f3fc; --linkh:#a5f3fc;
+  --sep:#33415a; --wtitle:#93c5fd; --ltext:#7dd3fc; --lbg:#16223c; --accent:#38bdf8;
+  --card-border:rgba(100,116,139,.35); --th:rgba(56,189,248,.13); --thc:#bae6fd; --zebra:rgba(51,65,85,.35);
+  --btn-border:rgba(56,189,248,.45); --desc:#9db3d6; --code:#93c5fd; --codebg:rgba(2,6,23,.6);
+  --glow1:rgba(56,189,248,.12); --glow2:rgba(244,114,182,.08); --glow3:rgba(45,212,191,.07);
+  --overlay:rgba(15,23,42,.30);
+}
+html.before{
+  --bg:#e7e7e7; --panel:#ffffff; --panel2:#f3f3f3; --text:#4e4e4e; --post:#868686;
+  --title:#000000; --byline:rgba(0,0,0,.54); --link:#d90c0c; --linkv:#39f4c6; --linkh:#39f4c6;
+  --sep:#c3c3c3; --wtitle:#000000; --ltext:rgba(0,0,0,.54); --lbg:#f7f7f7; --accent:#010101;
+  --card-border:rgba(0,0,0,.06); --th:#f0f0f0; --thc:#333; --zebra:#f6f6f6;
+  --btn-border:rgba(0,0,0,.25); --desc:#6b6b6b; --code:#0d47a1; --codebg:#f1f1f1;
+  --glow1:transparent; --glow2:transparent; --glow3:transparent;
+  --overlay:rgba(0,0,0,.26);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Noto Sans KR',Roboto,sans-serif;font-size:16px;
+background-image:radial-gradient(ellipse at 20% -10%,var(--glow1) 0%,transparent 55%),radial-gradient(ellipse at 85% 15%,var(--glow2) 0%,transparent 50%),radial-gradient(ellipse at 50% 110%,var(--glow3) 0%,transparent 55%);background-attachment:fixed}
+a{color:var(--link);text-decoration:none}a:hover{color:var(--linkh)}
+.wrap{max-width:922px;margin:0 auto;padding:24px 16px 60px}
+header.top{text-align:center;padding:28px 0 8px}
+header.top h1{font-size:40px;font-weight:700;color:var(--title);margin:6px 0 4px;letter-spacing:-.02em;
+background:linear-gradient(90deg,var(--title) 30%,#7dd3fc 75%,#c4b5fd);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+html.before header.top h1{background:none;-webkit-text-fill-color:currentColor;color:var(--title)}
+header.top .desc{color:var(--desc);font-size:.95em}
+.tabs{list-style:none;display:flex;gap:8px;justify-content:center;padding:0;margin:14px 0 4px}
+.tabs a{font-weight:700;text-transform:uppercase;font-size:15px;color:var(--desc)}
+.search{display:flex;justify-content:center;margin:10px 0 26px}
+.search input{background:transparent;border:0;border-bottom:1px solid var(--btn-border);color:var(--title);padding:8px 14px;border-radius:999px;width:min(320px,80%);outline:0;transition:.3s}
+.search input::placeholder{color:var(--desc);opacity:.5}
+.search input:focus{border-bottom-color:var(--link)}
+.grid{display:grid;grid-template-columns:1fr 284px;gap:20px;align-items:start}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+main h2.main-heading{color:var(--byline);font-size:.9em;letter-spacing:.08em;text-transform:uppercase;margin:2px 0 10px}
+.card{background:var(--panel);border:1px solid var(--card-border);border-radius:14px;padding:26px 30px;margin-bottom:18px;box-shadow:0 2px 14px rgba(0,0,0,.25)}
+html.before .card{box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.byline{color:var(--byline);font-size:.88em}
+.byline .dot{margin:0 4px}
+h3.ptitle{margin:2px 0 10px;font-size:26px;font-weight:700;color:var(--title);letter-spacing:-.01em;
+border-left:4px solid var(--accent);padding-left:.55em;transition:.2s}
+html.before h3.ptitle{border-left:0;padding-left:0}
+h3.ptitle:hover{color:var(--linkv)}
+.snip{color:var(--post);line-height:1.75}
+.snip p{margin:.5em 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;font-size:.95em}
+th,td{border:1px solid var(--card-border);color:var(--post);padding:5px 10px;text-align:center}
+th{background:var(--th);color:var(--thc);font-weight:700}
+html.after tr:nth-child(even) td{background:var(--zebra)}
+.labels{margin-top:14px;display:flex;flex-wrap:wrap;gap:6px}
+.lab{background:var(--lbg);color:var(--ltext);border:1px solid var(--card-border);border-radius:999px;padding:3px 11px;font-size:.82em}
+.jump{display:inline-block;margin-top:12px;border:1px solid var(--btn-border);border-radius:999px;padding:5px 16px;font-size:.85em;font-weight:700;text-transform:uppercase;color:var(--link)}
+.jump:hover{color:var(--linkv)}
+aside .widget{background:var(--panel2);border:1px solid var(--card-border);border-radius:14px;padding:18px 20px;margin-bottom:18px}
+aside h3.wtitle{margin:0 0 10px;font-size:.95em;color:var(--wtitle);letter-spacing:.04em}
+aside ul{list-style:none;margin:0;padding:0;font-size:.95em}
+aside li{padding:6px 0;border-bottom:1px dashed var(--card-border)}
+aside li:last-child{border-bottom:0}
+aside .cnt{float:right;color:var(--byline)}
+.profile{text-align:center}
+.avatar{width:86px;height:86px;border-radius:50%;background:linear-gradient(135deg,#38bdf8,#a78bfa);margin:6px auto 10px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#0f172a;font-size:1.6em}
+.visit{display:inline-block;border:1px solid var(--btn-border);border-radius:12px;padding:5px 18px;font-size:.8em;color:var(--ltext);margin-top:8px}
+.pager{text-align:center;margin:26px 0}
+.pager a{border:1px solid var(--btn-border);border-radius:999px;padding:7px 20px;color:var(--link)}
+footer.foot{text-align:center;color:var(--byline);font-size:.8em;margin-top:34px}
+.toggle{position:fixed;top:14px;right:14px;z-index:50;background:var(--accent);color:#0f172a;border:0;border-radius:999px;padding:10px 20px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 3px 12px rgba(0,0,0,.4)}
+.toggle:hover{filter:brightness(1.2)}
+</style>
+</head>
+<body>
+
+<button class="toggle" id="tg">모습 바꿔보기: 적용 전 →</button>
+<div class="wrap">
+  <header class="top">
+    <div style="color:var(--byline);font-size:.8em">Menu · Search</div>
+    <h1>아트로그</h1>
+    <div class="desc">AI RSI 시장 리포트 · 대시보드 · 가이드</div>
+    <ul class="tabs"><li><a href="#" style="color:var(--title);border-bottom:3px solid var(--title)">홈</a></li><li><a href="#">RSI 리포트</a></li><li><a href="#">대시보드</a></li></ul>
+    <div class="search"><input placeholder="이 블로그 검색"></div>
+  </header>
+  <div class="grid">
+    <main>
+      <h2 class="main-heading">게시물</h2>
+      <div class="card">
+        <div class="byline">2026. 11. 7. 오전 10:10:00<span class="dot">·</span>공유</div>
+        <h3 class="ptitle" style="font-size:26px">AI RSI 시장 리포트 — 11-07 15:00 (AI 자동발행)</h3>
+        <p class="snip">본 발행물의 시장 분석 및 예측 내용은 일련의 계산 로직에 따라 자동 작성되었습니다...</p>
+        <table>
+          <tr><th>읽기(구간)</th><th>20 미만</th><th>20~40</th><th>40~60</th><th>60~80</th><th>80 이상</th></tr>
+          <tr><td>RSI 15m</td><td>3</td><td>12</td><td>19</td><td>5</td><td>1</td></tr>
+          <tr><td>RSI 1h</td><td>1</td><td>17</td><td>22</td><td>0</td><td>0</td></tr>
+        </table>
+        <p class="snip">1-1 시장 총평 ... 과매수 심볼 6개, 과매도 3개 ...</p>
+        <div class="labels"><span class="lab">AI자동분석</span></div>
+        <a class="jump" href="#">더보기</a>
+      </div>
+      <div class="card">
+        <div class="byline">2026. 11. 7. 오전 10:10:00</div>
+        <h3 class="ptitle">시장 RSI 시각화 대시보드 (라이브 차트)</h3>
+        <p class="snip">아래 차트는 데이터망에서 <code style="background:var(--codebg);color:var(--code);border-radius:5px;padding:2px 6px;font-size:.9em">실시간</code> 으로 불러옵니다... 60초 자동 갱신.</p>
+        <div class="labels"><span class="lab">AI자동분석</span></div>
+        <a class="jump" href="#">더보기</a>
+      </div>
+      <div class="card">
+        <div class="byline">2026. 11. 5. 오후 6:00:00</div>
+        <h3 class="ptitle">AI 가입 가이드 (레퍼럴)</h3>
+        <p class="snip">본 페이지에는 <b>제휴 링크</b>가 포함되어 있습니다... 1단계 회원가입 → 2단계 보안설정 → 3단계 첫 예치.</p>
+        <div class="labels"><span class="lab">AI자동분석</span></div>
+        <a class="jump" href="#">더보기</a>
+      </div>
+      <div class="pager"><a href="#">게시물 더보기</a></div>
+    </main>
+    <aside>
+      <div class="widget profile">
+        <div class="avatar">A</div>
+        <div style="font-weight:700;color:var(--title)">coinlens</div>
+        <a class="visit" href="#">프로필 보기</a>
+      </div>
+      <div class="widget">
+        <h3 class="wtitle">목록</h3>
+        <ul>
+          <li><a href="#">AI자동분석</a><span class="cnt">42</span></li>
+          <li><a href="#">가이드</a><span class="cnt">1</span></li>
+          <li><a href="#">시장분석</a><span class="cnt">8</span></li>
+        </ul>
+      </div>
+      <div class="widget">
+        <h3 class="wtitle">보관함</h3>
+        <ul>
+          <li><a href="#">2026년 11월</a><span class="cnt">41</span></li>
+          <li><a href="#">2026년 10월</a><span class="cnt">2</span></li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+  <footer class="foot">© 아트로그 · Powered by Blogger · 미리보기 페이지</footer>
+</div>
+<script>
+var tg=document.getElementById('tg'),h=document.documentElement;
+tg.onclick=function(){var to=h.classList.contains('after')?'before':'after';h.classList.remove(h.classList.contains('after')?'after':'before');h.classList.add(to);
+tg.textContent=(to==='after')?'모습 바꿔보기: 적용 전 →':'모습 바꿔보기: 적용 후 ←';};
+</script>
+</body>
+</html>
