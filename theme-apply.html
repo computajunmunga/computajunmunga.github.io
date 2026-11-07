@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>블로그 다크 테마 적용</title>
+<style>
+body{font-family:'Noto Sans KR',sans-serif;background:#0f172a;color:#e2e8f0;max-width:860px;margin:0 auto;padding:28px}
+h2{color:#93c5fd}p,li{line-height:1.7}
+code{background:#1e293b;padding:2px 6px;border-radius:5px;color:#93c5fd}
+pre{background:#111827;border:1px solid #334155;border-radius:10px;padding:12px;max-height:320px;overflow:auto;font-size:.8rem}
+textarea{width:100%;height:300px;background:#111827;color:#93c5fd;border:1px solid #334155;border-radius:10px;padding:12px;font-family:monospace;font-size:.8rem}
+.btn{background:#38bdf8;color:#0f172a;border:0;border-radius:8px;padding:8px 18px;font-weight:700;cursor:pointer;margin:6px 0 12px}
+.btn:hover{background:#7dd3fc}
+.card{background:rgba(30,41,59,.6);border:1px solid #334155;border-radius:12px;padding:16px 20px;margin:18px 0}
+.warn{color:#fbbf24;font-weight:700}
+.step{color:#7dd3fc;font-weight:700}
+</style></head><body>
+<h1>블로그 다크 테마 적용 (아트로그)</h1>
+<p>블로그 테마 XML에서 <b>스타일 변수</b>와 <b>추가 CSS</b> 두 곳만 교체합니다. 3번 붙여넣기면 끝.</p>
+
+<div class="card"><span class="warn">⚠ 시작 전 필수: 백업</span>
+<p>Blogger 대시보드 → 테마 → HTML 편집 화면 우측 상단 <b>⋯ 메뉴 → 백업</b> 으로 현재 테마를 내려받아 두세요. 되돌릴 때 "복원"으로 원상복구할 수 있습니다.</p></div>
+
+<div class="card"><span class="step">STEP 1 — 스타일 변수 교체 (블록 A)</span>
+<p>테마 HTML 편집에서 검색: <code>&lt;!-- Constants --&gt;</code> → 이 줄부터 <b>Widths 그룹 끝(</Group>)</b>까지 전체 선택 후 아래 내용으로 교체 대신, 아래 [블록 A]는 <b>Constants 주석 줄 바로 앞에 그대로 삽입</b>하고 기존 동일 항목은 그 아래 둔 채 두어도 되지만, 값이 중복되면 나중 것이 이깁니다. (가장 안전: 기존 <code>&lt;!-- Constants --&gt;</code>부터 <code>&lt;/Group&gt;</code> 까지 통째로 지우고 아래 블록으로 교체)</p>
+<div class="btn" id="btnA">[블록 A] 전체 복사</div>
+<textarea id="tA" rows="14">&lt;!-- Constants --&gt;
+
+&lt;Variable name=&quot;damionRegular36&quot; description=&quot;Damion Regular 36&quot; type=&quot;font&quot; default=&quot;400 36px Damion, cursive&quot; hideEditor=&quot;true&quot;  value=&quot;400 36px Damion, cursive&quot;/&gt;
+&lt;Variable name=&quot;damionRegular62&quot; description=&quot;Damion Regular 62&quot; type=&quot;font&quot; default=&quot;400 62px Damion, cursive&quot; hideEditor=&quot;true&quot;  value=&quot;400 62px Damion, cursive&quot;/&gt;
+&lt;Variable name=&quot;playfairDisplayBlack28&quot; description=&quot;Playfair Display Black 28&quot; type=&quot;font&quot; default=&quot;900 28px Playfair Display, serif&quot; hideEditor=&quot;true&quot;  value=&quot;900 28px Playfair Display, serif&quot;/&gt;
+&lt;Variable name=&quot;playfairDisplayBlack36&quot; description=&quot;Playfair Display Black 36&quot; type=&quot;font&quot; default=&quot;900 36px Playfair Display, serif&quot; hideEditor=&quot;true&quot;  value=&quot;900 36px Playfair Display, serif&quot;/&gt;
+&lt;Variable name=&quot;playfairDisplayBlack44&quot; description=&quot;Playfair Display Black 44&quot; type=&quot;font&quot; default=&quot;900 44px Playfair Display, serif&quot; hideEditor=&quot;true&quot;  value=&quot;900 44px Playfair Display, serif&quot;/&gt;
+&lt;Variable name=&quot;robotoNormal15&quot; description=&quot;Roboto Normal 15&quot; type=&quot;font&quot; default=&quot;15px Roboto, sans-serif&quot; hideEditor=&quot;true&quot;  value=&quot;16px &#x27;Noto Sans KR&#x27;, Roboto, sans-serif&quot;/&gt;
+&lt;Variable name=&quot;robotoNormal16&quot; description=&quot;Roboto Normal 16&quot; type=&quot;font&quot; default=&quot;16px Roboto, sans-serif&quot; hideEditor=&quot;true&quot;  value=&quot;16px &#x27;Noto Sans KR&#x27;, Roboto, sans-serif&quot;/&gt;
+&lt;Variable name=&quot;robotoLightItalic15&quot; description=&quot;Roboto Light Italic 15&quot; type=&quot;font&quot; default=&quot;italic 300 15px Roboto, sans-serif&quot; hideEditor=&quot;true&quot;  value=&quot;italic 300 16px &#x27;Noto Sans KR&#x27;, Roboto, sans-serif&quot;/&gt;
+&lt;Variable name=&quot;robotoBold22&quot; description=&quot;Roboto Bold 22&quot; type=&quot;font&quot; default=&quot;bold 22px Roboto, sans-serif&quot; hideEditor=&quot;true&quot;  value=&quot;bold 24px &#x27;Noto Sans KR&#x27;, Roboto, sans-serif&quot;/&gt;
+&lt;Variable name=&quot;robotoBold30&quot; description=&quot;Roboto Bold 30&quot; type=&quot;font&quot; default=&quot;bold 30px Roboto, sans-serif&quot; hideEditor=&quot;true&quot;  value=&quot;bold 28px &#x27;Noto Sans KR&#x27;, Roboto, sans-serif&quot;/&gt;
+&lt;Variable name=&quot;robotoBold45&quot; description=&quot;Roboto Bold 45&quot; type=&quot;font&quot; default=&quot;bold 45px Roboto, sans-serif&quot; hideEditor=&quot;true&quot;  value=&quot;bold 40px &#x27;Noto Sans KR&#x27;, Roboto, sans-serif&quot;/&gt;
+
+&lt;!-- Variable definitions --&gt;
+
+&lt;Variable name=&quot;keycolor&quot; description=&quot;Main Color&quot; type=&quot;color&quot; default=&quot;#2196f3&quot;  value=&quot;#38bdf8&quot;/&gt;
+&lt;Variable name=&quot;startSide&quot; description=&quot;Start side in blog language&quot; type=&quot;automatic&quot; default=&quot;left&quot; hideEditor=&quot;true&quot; /&gt;
+&lt;Variable name=&quot;endSide&quot; description=&quot;End side in blog language&quot; type=&quot;automatic&quot; default=&quot;right&quot; hideEditor=&quot;true&quot; /&gt;
+
+&lt;Group description=&quot;Page Text&quot;&gt;
+  &lt;Variable name=&quot;body.text.font&quot; description=&quot;Font&quot;
+      type=&quot;font&quot;
+      default=&quot;$(robotoNormal15)&quot;  value=&quot;normal normal 16px &#x27;Noto Sans KR&#x27;, Roboto, sans-serif&quot;/&gt;
+  &lt;Variable name=&quot;body.text.color&quot; description=&quot;Color&quot;
+      type=&quot;color&quot;
+      default=&quot;#757575&quot;  value=&quot;#cbd5e1&quot;/&gt;
+&lt;/Group&gt;
+
+&lt;Group description=&quot;Backgrounds&quot;&gt;
+  &lt;Variable name=&quot;body.background.height&quot; description=&quot;Background height&quot;
+      type=&quot;length&quot;
+      min=&quot;420px&quot;
+      max=&quot;640px&quot;
+      default=&quot;480px&quot;  value=&quot;480px&quot;/&gt;
+  &lt;Variable name=&quot;body.background&quot; description=&quot;Background&quot;
+      color=&quot;$(body.background.color)&quot;
+      type=&quot;background&quot;
+      default=&quot;$(color) none repeat scroll top left&quot;  value=&quot;$(color) none repeat scroll top left&quot;/&gt;
+  &lt;Variable name=&quot;body.background.color&quot; description=&quot;Body background color&quot;
+      type=&quot;color&quot;
+      default=&quot;#eee&quot;  value=&quot;#0f172a&quot;/&gt;
+  &lt;Variable name=&quot;posts.background.color&quot; description=&quot;Post background color&quot;
+      type=&quot;color&quot;
+      default=&quot;#fff&quot;  value=&quot;#141d33&quot;/&gt;
+  &lt;Variable name=&quot;body.background.blur&quot; description=&quot;Background blur&quot;
+      type=&quot;length&quot;
+      min=&quot;0px&quot;
+      max=&quot;50px&quot;
+      default=&quot;0px&quot;  value=&quot;0px&quot;/&gt;
+&lt;/Group&gt;
+
+&lt;Group description=&quot;Links&quot;&gt;
+  &lt;Variable name=&quot;body.link.color&quot; description=&quot;Link color&quot;
+      type=&quot;color&quot;
+      default=&quot;#2196f3&quot;  value=&quot;#7dd3fc&quot;/&gt;
+  &lt;Variable name=&quot;body.link.visited.color&quot; description=&quot;Visited link color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(body.link.color)&quot;  value=&quot;#a5f3fc&quot;/&gt;
+  &lt;Variable name=&quot;body.link.hover.color&quot; description=&quot;Link Hover Color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(body.link.color)&quot;  value=&quot;#a5f3fc&quot;/&gt;
+&lt;/Group&gt;
+
+&lt;Group description=&quot;Blog title&quot; selector=&quot;div.widget.Header&quot;&gt;
+  &lt;Variable name=&quot;blog.title.font&quot; description=&quot;Font&quot;
+      type=&quot;font&quot;
+      default=&quot;$(robotoBold45)&quot;  value=&quot;bold 40px &#x27;Noto Sans KR&#x27;, Roboto, sans-serif&quot;/&gt;
+  &lt;Variable name=&quot;blog.title.color&quot; description=&quot;Color&quot;
+      type=&quot;color&quot;
+      default=&quot;#fff&quot;  value=&quot;#f8fafc&quot;/&gt;
+  &lt;Variable name=&quot;header.icons.color&quot;
+      description=&quot;Background icons color&quot;
+      type=&quot;color&quot;
+      default=&quot;#fff&quot;  value=&quot;#9fb3d8&quot;/&gt;
+&lt;/Group&gt;
+
+&lt;Group description=&quot;Tabs text&quot; selector=&quot;div.widget.PageList&quot;&gt;
+  &lt;Variable name=&quot;tabs.font&quot; description=&quot;Font&quot;
+      type=&quot;font&quot;
+      family=&quot;$(robotoNormal15.family)&quot;
+      size=&quot;$(robotoNormal15.size)&quot;
+      default=&quot;700 normal $(size) $(family)&quot;  value=&quot;700 normal $(size) $(family)&quot;/&gt;
+  &lt;Variable name=&quot;tabs.color&quot; description=&quot;Text color&quot;
+      type=&quot;color&quot;
+      default=&quot;#ccc&quot;  value=&quot;#9db3d6&quot;/&gt;
+  &lt;Variable name=&quot;tabs.selected.color&quot; description=&quot;Selected color&quot;
+      type=&quot;color&quot;
+      default=&quot;#fff&quot;  value=&quot;#f8fafc&quot;/&gt;
+  &lt;Variable name=&quot;tabs.overflow.background.color&quot; description=&quot;Popup background color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(posts.background.color)&quot;  value=&quot;#141d33&quot;/&gt;
+  &lt;Variable name=&quot;tabs.overflow.color&quot; description=&quot;Popup text color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(posts.text.color)&quot;  value=&quot;#cbd5e1&quot;/&gt;
+  &lt;Variable name=&quot;tabs.overflow.selected.color&quot; description=&quot;Popup selected color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(posts.title.color)&quot;  value=&quot;#f8fafc&quot;/&gt;
+&lt;/Group&gt;
+
+&lt;Group description=&quot;Posts&quot; selector=&quot;div.widget.Blog&quot;&gt;
+  &lt;Variable name=&quot;posts.title.color&quot; description=&quot;Post title color&quot;
+      type=&quot;color&quot;
+      default=&quot;#212121&quot;  value=&quot;#f8fafc&quot;/&gt;
+  &lt;Variable name=&quot;posts.title.font&quot; description=&quot;Post title font&quot;
+      type=&quot;font&quot;
+      default=&quot;$(robotoBold22)&quot;  value=&quot;bold 24px &#x27;Noto Sans KR&#x27;, Roboto, sans-serif&quot;/&gt;
+  &lt;Variable name=&quot;posts.stream.title.font&quot; description=&quot;Post title stream font&quot;
+      type=&quot;font&quot;
+      default=&quot;$(robotoBold30)&quot;  value=&quot;bold 26px &#x27;Noto Sans KR&#x27;, Roboto, sans-serif&quot;/&gt;
+  &lt;Variable name=&quot;posts.text.font&quot; description=&quot;Post text font&quot;
+      type=&quot;font&quot;
+      default=&quot;$(body.text.font)&quot;  value=&quot;normal normal 16px &#x27;Noto Sans KR&#x27;, Roboto, sans-serif&quot;/&gt;
+  &lt;Variable name=&quot;posts.text.color&quot; description=&quot;Post text color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(body.text.color)&quot;  value=&quot;#c9d4e8&quot;/&gt;
+  &lt;Variable name=&quot;posts.byline.color&quot; description=&quot;Post byline color&quot;
+      type=&quot;color&quot;
+      default=&quot;rgba(0, 0, 0, 0.54)&quot;  value=&quot;rgba(148,163,184,0.75)&quot;/&gt;
+  &lt;Variable name=&quot;blockquote.font&quot; description=&quot;Blockquote font&quot;
+      type=&quot;font&quot;
+      default=&quot;$(robotoLightItalic15)&quot;  value=&quot;italic 300 15px &#x27;Noto Sans KR&#x27;, Roboto, sans-serif&quot;/&gt;
+  &lt;Variable name=&quot;blockquote.color&quot; description=&quot;Blockquote color&quot;
+      type=&quot;color&quot;
+      default=&quot;#444&quot;  value=&quot;#93c5fd&quot;/&gt;
+  &lt;Variable name=&quot;posts.icons.color&quot;
+      description=&quot;Post icons color&quot;
+      type=&quot;color&quot;
+      default=&quot;#707070&quot;  value=&quot;#8fa3c8&quot;/&gt;
+&lt;/Group&gt;
+
+&lt;Group description=&quot;Search&quot;&gt;
+  &lt;Variable name=&quot;search.input.color&quot; description=&quot;Input color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(blog.title.color)&quot;  value=&quot;#f8fafc&quot;/&gt;
+  &lt;Variable name=&quot;search.input.font&quot; description=&quot;Input font&quot;
+      type=&quot;font&quot;
+      default=&quot;$(robotoNormal16)&quot;  value=&quot;16px &#x27;Noto Sans KR&#x27;, Roboto, sans-serif&quot;/&gt;
+  &lt;Variable name=&quot;search.placeholder.color&quot; description=&quot;Placeholder text color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(blog.title.color)&quot;  value=&quot;#cbd5e1&quot;/&gt;
+&lt;/Group&gt;
+
+&lt;Group description=&quot;Sharing&quot;&gt;
+  &lt;Variable name=&quot;sharing.background.color&quot;
+      description=&quot;Sharing background color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(posts.background.color)&quot;  value=&quot;#1b2740&quot;/&gt;
+  &lt;Variable name=&quot;sharing.text.color&quot; description=&quot;Sharing text color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(posts.title.color)&quot;  value=&quot;#cbd5e1&quot;/&gt;
+  &lt;Variable name=&quot;sharing.icons.color&quot;
+      description=&quot;Sharing icons color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(sharing.text.color)&quot;  value=&quot;#cbd5e1&quot;/&gt;
+&lt;/Group&gt;
+
+&lt;Group description=&quot;Popular posts&quot; selector=&quot;div.widget.PopularPosts&quot;&gt;
+  &lt;Variable name=&quot;popularposts.background.color&quot;
+      description=&quot;Popular post background color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(body.background.color)&quot;  value=&quot;#1b2740&quot;/&gt;
+  &lt;Variable name=&quot;popularposts.byline.color&quot;
+      description=&quot;Popular post byline color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(posts.byline.color)&quot;  value=&quot;#9db3d6&quot;/&gt;
+  &lt;Variable name=&quot;popularposts.title.color&quot;
+      description=&quot;Popular post title color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(posts.title.color)&quot;  value=&quot;#f1f5f9&quot;/&gt;
+  &lt;Variable name=&quot;popularposts.text.color&quot;
+      description=&quot;Popular post text color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(posts.text.color)&quot;  value=&quot;#c9d4e8&quot;/&gt;
+  &lt;Variable name=&quot;popularposts.link.color&quot;
+      description=&quot;Popular post link color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(body.link.color)&quot;  value=&quot;#7dd3fc&quot;/&gt;
+&lt;/Group&gt;
+
+&lt;Group description=&quot;Post navigation&quot; selector=&#x27;div.blog-pager&#x27;&gt;
+  &lt;Variable name=&quot;posts.navigation.link.color&quot;
+      description=&quot;Post navigation links color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(body.link.color)&quot;  value=&quot;#7dd3fc&quot;/&gt;
+  &lt;Variable name=&quot;posts.navigation.link.visited.color&quot;
+      description=&quot;Post navigation links visited color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(body.link.visited.color)&quot;  value=&quot;#a5f3fc&quot;/&gt;
+  &lt;Variable name=&quot;posts.navigation.link.hover.color&quot;
+      description=&quot;Post navigations links hover color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(body.link.hover.color)&quot;  value=&quot;#a5f3fc&quot;/&gt;
+&lt;/Group&gt;
+
+&lt;Group description=&quot;Sidebar&quot; selector=&quot;div.sidebar-container&quot;&gt;
+  &lt;Variable name=&quot;sidebar.backgroundColorTop&quot;
+      description=&quot;Background color (Top)&quot;
+      type=&quot;color&quot;
+      default=&quot;#f7f7f7&quot;  value=&quot;#101828&quot;/&gt;
+  &lt;Variable name=&quot;sidebar.backgroundColorTopHD&quot;
+      description=&quot;Background color (Top) - HD&quot;
+      type=&quot;color&quot;
+      default=&quot;rgba(255, 255, 255, 1)&quot;  value=&quot;#0d1424&quot;/&gt;
+  &lt;Variable name=&quot;sidebar.backgroundColorBottom&quot;
+      description=&quot;Background color (Bottom)&quot;
+      type=&quot;color&quot;
+      default=&quot;#fff&quot;  value=&quot;#101828&quot;/&gt;
+  &lt;Variable name=&quot;sidebar.separator.color&quot;
+      description=&quot;Separator color&quot;
+      type=&quot;color&quot;
+      default=&quot;#ccc&quot;  value=&quot;#33415a&quot;/&gt;
+  &lt;Variable name=&quot;widget.title.color&quot;
+      description=&quot;Gadget title color&quot;
+      type=&quot;color&quot;
+      default=&quot;#212121&quot;  value=&quot;#93c5fd&quot;/&gt;
+  &lt;Variable name=&quot;sidebar.icons.color&quot;
+      description=&quot;Sidebar icons color&quot;
+      type=&quot;color&quot;
+      default=&quot;#707070&quot;  value=&quot;#8fa3c8&quot;/&gt;
+&lt;/Group&gt;
+
+&lt;Group description=&quot;Author profile&quot; selector=&#x27;.widget.Profile&#x27;&gt;
+  &lt;Variable name=&quot;profile.title.color&quot; description=&quot;Profile title color&quot;
+      type=&quot;color&quot;
+      default=&quot;rgba(0,0,0,0.52)&quot;  value=&quot;#cbd5e1&quot;/&gt;
+  &lt;Variable name=&quot;profile.text.color&quot; description=&quot;Profile text color&quot;
+      type=&quot;color&quot;
+      default=&quot;rgba(0, 0, 0, 0.54)&quot;  value=&quot;#9db3d6&quot;/&gt;
+  &lt;Variable name=&quot;profile.link.color&quot; description=&quot;Profile link color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(posts.title.color)&quot;  value=&quot;#f1f5f9&quot;/&gt;
+&lt;/Group&gt;
+
+&lt;Group description=&quot;Labels&quot; selector=&quot;.widget.Label&quot;&gt;
+  &lt;Variable name=&quot;labels.text.color&quot;
+      description=&quot;Label text color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(body.link.color)&quot;  value=&quot;#7dd3fc&quot;/&gt;
+  &lt;Variable name=&quot;labels.background.color&quot;
+      description=&quot;Label background color&quot;
+      type=&quot;color&quot;
+      red=&quot;$(labels.text.color.red)&quot;
+      green=&quot;$(labels.text.color.green)&quot;
+      blue=&quot;$(labels.text.color.blue)&quot;
+      default=&quot;rgba($red, $green, $blue, 0.05)&quot;  value=&quot;#16223c&quot;/&gt;
+&lt;/Group&gt;
+
+&lt;Group description=&quot;Attribution&quot; selector=&quot;.widget.Attribution&quot;&gt;
+  &lt;Variable name=&quot;attribution.text.color&quot; description=&quot;Attribution text color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(body.text.color)&quot;  value=&quot;#9db3d6&quot;/&gt;
+  &lt;Variable name=&quot;attribution.link.color&quot; description=&quot;Attribution link color&quot;
+      type=&quot;color&quot;
+      default=&quot;$(body.link.color)&quot;  value=&quot;#7dd3fc&quot;/&gt;
+  &lt;Variable name=&quot;attribution.icon.color&quot; description=&quot;Attribution icon color&quot;
+      type=&quot;color&quot;
+      default=&quot;#707070&quot;
+      hideEditor=&quot;true&quot;  value=&quot;#8fa3c8&quot;/&gt;
+&lt;/Group&gt;
+
+&lt;Group description=&quot;Widths&quot;&gt;
+  &lt;Variable name=&quot;sidebar.width&quot; description=&quot;Sidebar width&quot; type=&quot;length&quot;
+            min=&quot;100px&quot; max=&quot;1000px&quot; default=&quot;284px&quot;  value=&quot;284px&quot;/&gt;
+  &lt;Variable name=&quot;content.width&quot; description=&quot;Content width&quot; type=&quot;length&quot;
+            min=&quot;600px&quot; max=&quot;2400px&quot; default=&quot;922px&quot;  value=&quot;922px&quot;/&gt;
+  &lt;Variable name=&quot;content.margin&quot; description=&quot;Content margin&quot; type=&quot;length&quot;
+            min=&quot;0px&quot; max=&quot;1000px&quot; default=&quot;117px&quot;  value=&quot;117px&quot;/&gt;
+&lt;/Group&gt;
+</textarea>
+</div>
+
+<div class="card"><span class="step">STEP 2 — 추가 CSS 넣기 (블록 B)</span>
+<p>같은 HTML 편집 창에서 <code>]]&gt;&lt;/b:skin&gt;</code> 을 검색 → 그 줄 <b>바로 위</b>에 아래 전체 붙여넣기.</p>
+<div class="btn" id="btnB">[블록 B] copy</div>
+<textarea id="tB" rows="14">/* ==== CoinLens 추가 테마 CSS ==== */
+body { background-color: #0f172a; }
+
+.bg-photo {
+  background: #0f172a;
+  background-image:
+    radial-gradient(ellipse at 20% -10%, rgba(56,189,248,.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 15%, rgba(244,114,182,.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 110%, rgba(45,212,191,.07) 0%, transparent 55%);
+}
+.bg-photo-overlay { background: rgba(15,23,42,.30); }
+
+.Header h1 { letter-spacing: -0.02em; }
+.item-view .Header h1, .sticky .Header h1 { font-size: 22px; }
+
+h3.post-title, .post-title a { letter-spacing: -0.01em; }
+h3.post-title { border-left: 4px solid #38bdf8; padding-left: .55em; }
+.item-view h3.post-title { font-size: 1.45em; }
+
+.post-body { line-height: 1.75; }
+.post-body a { text-decoration-color: rgba(125,211,252,.4); }
+
+.post-outer-container,
+.PopularPosts,
+.main .FeaturedPost .widget-content {
+  border-radius: 14px;
+  border: 1px solid rgba(100,116,139,.35);
+  box-shadow: 0 2px 14px rgba(0,0,0,.35);
+}
+
+/* 표 (RSI 구간표 등) */
+.post-body table, .widget table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+.post-body th, .post-body td, .widget th, .widget td {
+  border: 1px solid rgba(100,116,139,.4);
+  color: #dbe2ee;
+  padding: 5px 9px;
+  font-size: .95em;
+}
+.post-body th, .widget th { background: rgba(56,189,248,.13); color: #bae6fd; }
+.post-body tr:nth-child(even) td { background: rgba(51,65,85,.35); }
+
+/* 라벨 필 스타일 강조 */
+.byline.post-labels a { border-radius: 999px; }
+
+/* 코드 */
+pre, code { background: rgba(2,6,23,.6); color: #93c5fd; border: 1px solid rgba(100,116,139,.3); border-radius: 6px; padding: 2px 5px; }
+pre { padding: 10px; overflow-x: auto; }
+
+/* 블록 인용 */
+.post-body blockquote {
+  border-left: 3px solid #38bdf8;
+  background: rgba(30,41,59,.6);
+  padding: 8px 14px;
+  border-radius: 0 10px 10px 0;
+  font-style: normal;
+  text-align: left;
+  font-size: 1em;
+}
+
+/* 페이지 이동 버튼 */
+.blog-pager .flat-button { border: 1px solid rgba(56,189,248,.4); border-radius: 999px; padding: 6px 18px; }
+
+/* 검색 입력 */
+.search form { border-bottom-color: rgba(148,163,184,.5); }
+
+/* 점프링크(keep reading) */
+.jump-link.flat-button { border: 1px solid rgba(56,189,248,.4); border-radius: 999px; padding: 4px 14px; margin-top: 4px; }
+
+/* 선택·스크롤 */
+::selection { background: rgba(56,189,248,.35); color: #f8fafc; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb { background: rgba(100,116,139,.55); border-radius: 8px; }
+*::-webkit-scrollbar-track { background: rgba(15,23,42,.5); }
+
+/* 모바일 */
+@media (max-width: 800px) {
+  .post-outer-container { padding: 16px 14px; }
+  h3.post-title { font-size: 1.15em; }
+  .item-view h3.post-title { font-size: 1.25em; }
+}
+</textarea>
+</div>
+
+<div class="card"><span class="step">STEP 3 — 한글 웹폰트 1줄 추가</span>
+<p><code>&lt;b:include data='blog' name='all-head-content'/&gt;</code> 줄 바로 아래에 다음 1줄 추가:</p>
+<div class="btn" id="btnC">[폰트 줄] copy</div>
+<textarea id="tC" rows="3">&lt;link href='https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;display=swap' rel='stylesheet'/&gt;</textarea>
+</div>
+
+<div class="card"><span class="step">저장</span><p>우측 하단 <b>저장</b> → 블로그 열어서 확인. 이상하면 백업본으로 복원.</p></div>
+
+<script>
+function bind(btn,ta){document.getElementById(btn).onclick=function(){var t=document.getElementById(ta);t.select();document.execCommand('copy');this.textContent='복사 완료!';var b=this;setTimeout(function(){b.textContent=b.textContent.replace('복사 완료!','복사');},1500);}}
+bind('btnA','tA');bind('btnB','tB');bind('btnC','tC');
+</script>
+</body></html>
