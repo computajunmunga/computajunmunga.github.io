@@ -448,3 +448,19 @@ To https://github.com/computajunmunga/computajunmunga.github.io.git
 rsi.csv: 201 rows
 daily 비어있음 → 기존 파일 유지
 rsi_latest.csv: 515 symbols
+https://github.com/computajunmunga/computajunmunga.github.io URL에서
+   9a857c5..e5a719e  main       -> origin/main
+error: rebase 할 수 없습니다: 스테이징하지 않은 변경 사항이 있습니다.
+error: 추가로, 인덱스에 커밋하지 않은 변경 사항이 있습니다.
+error: 커밋하거나 스태시에 넣으십시오.
+업데이트 중 9a857c5..e5a719e
+Fast-forward
+ assets/data/rsi.csv        |    1 +
+ assets/data/rsi_latest.csv | 1030 ++++++++++++++++++++++----------------------
+ 2 files changed, 516 insertions(+), 515 deletions(-)
+To https://github.com/computajunmunga/computajunmunga.github.io.git
+   e5a719e..a14b444  main -> main
+rsi.csv: 201 rows
+daily 비어있음 → 기존 파일 유지
+429 제한 → 11초 대기 후 재시도 (1/4)
+rsi_latest.csv: 515 symbols
