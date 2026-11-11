@@ -1003,3 +1003,9 @@ To https://github.com/computajunmunga/computajunmunga.github.io.git
 rsi.csv: 200 rows
 daily 비어있음 → 기존 파일 유지
 rsi_latest.csv: 515 symbols
+To https://github.com/computajunmunga/computajunmunga.github.io.git
+   f2c275c..3cf1f8b  main -> main
+rsi.csv: 200 rows
+daily 비어있음 → 기존 파일 유지
+429 제한 → 11초 대기 후 재시도 (1/4)
+rsi_latest.csv: 515 symbols
