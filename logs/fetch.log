@@ -2539,3 +2539,8 @@ To https://github.com/computajunmunga/computajunmunga.github.io.git
 rsi.csv: 184 rows
 daily 비어있음 → 기존 파일 유지
 rsi_latest.csv: 515 symbols
+To https://github.com/computajunmunga/computajunmunga.github.io.git
+   6c597cd..b6a2516  main -> main
+rsi.csv: 184 rows
+daily 비어있음 → 기존 파일 유지
+rsi_latest.csv: 515 symbols
